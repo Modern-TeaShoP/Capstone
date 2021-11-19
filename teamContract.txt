@@ -1,0 +1,19 @@
+Team Contract:
+
+- In case we run into any disagreements, we’ll put it to a group vote. In case of a tie, appeal to our fellow or instructor for guidance.
+
+- If there is inter-group frustration, make sure we’re communicating. Take a 10-15 minute break away from the group member in question, then reconvene and discuss the issue later.
+
+- Group PR merge sessions - making sure the main branch is protected and that we all understand what’s going on with each PR.
+
+- When stuck, ask for help immediately - No excuse for having a worse overall product because of your pride.
+
+- Whoever “owns” the task will be the driver during pair partnership times.
+
+- Every team member understanding the framework as a whole is a MUST.
+
+- After hours work is bonus time, not necessarily “expected”, but wait to make any pull requests until we have group PR review time.
+
+- Daily stand-up at 10:45am
+
+- Daily wrap-up at 5:45pm
