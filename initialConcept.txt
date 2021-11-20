@@ -1,0 +1,43 @@
+# Modern TeaShoP Group Initial Game Concepts
+
+### Idea: 
+Round-based online multiplayer game with an end goal of outlasting all other players to claim in-game prize money.
+
+### Description: 
+Taking inspiration from Netflix’s hit series Squid Game, groups of eight players are pitted against each other in a winner-takes-all collection of minigames designed to test players’ speed, coordination, problem solving ability, and survivability in a dystopian world.
+
+### User Stories: 
+Seong Gi-Hun, a player in the game, finds himself in a room with seven other players, and is told that the winner of the competition will earn a large sum of money. Gi-Hun then plays (sometimes on his own, sometimes teamed with others) a series of games to determine the overall winner. During the course of the game, Gi-hun’s stats may change according to his performance in the previous games. In the final game, he finds himself facing off against all the other players, with a bonus depending on how well he has done so far. Finally, as Gi-hun outlasts all the other players, he is victorious and takes home the prize money.
+
+### MVP Features: 
+- Players need to be able to sign in and have persistent user information
+- Players need to be able to create and have persistent character information(stats/accomplishments)
+  - Times won
+  - Times lost
+  - Distance walked in game
+  - Best lap?
+  - Items received
+  - Money spent
+  - Total money earned
+  - Account created date
+- One game instance must allow for multiple players simultaneously (up to 8)
+- Characters must be able navigate the game environment
+- Characters must be able to interact with objects
+- Characters must be able to successfully complete minigame requirements
+- Characters need to see an end-game screen that shows the final results
+- Deployment on Heroku or something else
+
+### Stretch goals: 
+AI-controlled characters can fill in instead of requiring players to start a game
+Adjustable difficulty levels
+Allow for multiple instances to run simultaneously
+Implement chat system
+If player leaves mid game, AI takes over for that character
+Edit Character feature
+Leaderboard
+
+### Future goals:
+Add more games/maps
+Battle pass
+DLC
+
