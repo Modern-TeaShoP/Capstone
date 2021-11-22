@@ -1,0 +1,18 @@
+					Proof of Concepts
+
+- With this stack, the bare minimum is to use Socket-io to have two players moving around our map provided by itch.io with Phaser 3’s game engine running the entirety.
+
+Phaser 3:
+- By incorporating Phaser into our game we will be able to implement all of the functionality and backgrounds into the actual game. 
+- With our vast knowledge of Javascript we won't encounter a steep learning curve like other game engines. 
+- Great framework for 2D games and is well optimized for us to use in that regard.
+- With the Phaser lab it helped us get on the right track mentally on our capabilities and goals for our MVP/Tier.
+- Useful documentation at our disposal, but know to keep an eye out for Phaser 3 specifically.
+
+Itch.io:
+- With itch, we will have access to our assets that we want to implement into our game using Phaser.
+- It houses many sprites and cool backgrounds for us to choose from as well as ideas on how the game will unfold.
+- Many assets are free to use which is a plus!
+
+Socket-io: 
+- Socket will be used to have multiple players on the screen, interacting with game items at the same time.
