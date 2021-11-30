@@ -15,7 +15,7 @@ module.exports = (io) => {
       `A socket connection to the server has been made: ${socket.id}`
     );
 
-  socket.on("joinRoom", (roomKey) => {
+    socket.on("joinRoom", (roomKey) => {
       socket.join(roomKey);
       const roomInfo = gameRooms[roomKey];
       console.log("roomInfo", roomInfo);
@@ -26,7 +26,7 @@ module.exports = (io) => {
         playerId: socket.id,
       };
 
-       // update number of players
+      // update number of players
       roomInfo.numPlayers = Object.keys(roomInfo.players).length;
 
       // set initial state
@@ -38,14 +38,14 @@ module.exports = (io) => {
         numPlayers: roomInfo.numPlayers,
       });
 
-       // update all other players of the new player
+      // update all other players of the new player
       socket.to(roomKey).emit("newPlayer", {
         playerInfo: roomInfo.players[socket.id],
         numPlayers: roomInfo.numPlayers,
       });
     });
 
-      // when a player moves, update the player data
+    // when a player moves, update the player data
     socket.on("playerMovement", function (data) {
       const { x, y, roomKey } = data;
       gameRooms[roomKey].players[socket.id].x = x;
@@ -56,13 +56,13 @@ module.exports = (io) => {
         .emit("playerMoved", gameRooms[roomKey].players[socket.id]);
     });
 
-  socket.on("isKeyValid", function (input) {
+    socket.on("isKeyValid", function (input) {
       Object.keys(gameRooms).includes(input)
         ? socket.emit("keyIsValid", input)
         : socket.emit("keyNotValid");
     });
 
-        // get a random code for the room
+    // get a random code for the room
     socket.on("getRoomCode", async function () {
       let key = codeGenerator();
       while (Object.keys(gameRooms).includes(key)) {
@@ -74,6 +74,35 @@ module.exports = (io) => {
         numPlayers: 0,
       };
       socket.emit("roomCreated", key);
+    });
+
+    // when a player disconnects, remove them from our players object
+    socket.on("disconnect", function () {
+      let roomKey = 0;
+      for (let keys1 in gameRooms) {
+        for (let keys2 in gameRooms[keys1]) {
+          Object.keys(gameRooms[keys1][keys2]).map((el) => {
+            if (el === socket.id) {
+              roomKey = keys1;
+            }
+          });
+        }
+      }
+
+      const roomInfo = gameRooms[roomKey];
+
+      if (roomInfo) {
+        console.log("user disconnected: ", socket.id);
+        //remove this player from our players object
+        delete roomInfo.players[socket.id];
+        //update numPlayers
+        roomInfo.numPlayers = Object.keys(roomInfo.players).length;
+        //emit a message to all players to remove this player
+        io.to(roomKey).emit("disconnected", {
+          playerId: socket.id,
+          numPlayers: roomInfo.numPlayers,
+        });
+      }
     });
   });
 };
