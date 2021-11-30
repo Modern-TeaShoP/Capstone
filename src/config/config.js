@@ -1,14 +1,14 @@
 export default {
   type: Phaser.AUTO, // Specify the underlying browser rendering engine (AUTO, CANVAS, WEBGL)
   // AUTO will attempt to use WEBGL, but if not available it'll default to CANVAS
-  width: 800, // Game width in pixels
-  height: 600, // Game height in pixels
+  width: 1600, // Game width in pixels
+  height: 900, // Game height in pixels
   render: {
     pixelArt: true,
   },
   scale: {
     parent: "mygame",
-    autoCenter: true,
+    autoCenter: Phaser.Scale.CENTER_BOTH,
   },
   //  We will be expanding physics later
   physics: {
