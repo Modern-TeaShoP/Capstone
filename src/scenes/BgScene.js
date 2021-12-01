@@ -19,7 +19,7 @@ export default class BgScene extends Phaser.Scene {
     const map = this.make.tilemap({ key: "octoMap" });
     const floorTiles = map.addTilesetImage("Inside_A2", "floors");
     const wallTiles = map.addTilesetImage("NewWalls", "walls");
-    const floors = map.createLayer("Floors", floorTiles, 0, 0);
-    const walls = map.createLayer("Walls", wallTiles, 0, 0);
+    const floors = map.createLayer("Floors", floorTiles, 0, 0).setOrigin(0.5);
+    const walls = map.createLayer("Walls", wallTiles, 0, 0).setOrigin(0.5);
   }
 }
