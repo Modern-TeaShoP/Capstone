@@ -1,6 +1,8 @@
 import Phaser from 'phaser';
 import axios from 'axios';
 
+const bcrypt = require('bcrypt');
+
 export default class LoginScene extends Phaser.Scene {
   constructor() {
     super('LoginScene');
@@ -58,7 +60,22 @@ export default class LoginScene extends Phaser.Scene {
     scene.inputElement.on('click', function (event) {
       if (event.target.name === 'submitLogin') {
         async () => {
-          const res = await axios.post();
+          const email = scene.inputElement.getChildByName('email');
+
+          // contact the api to get the record associated with email
+          const res = await axios.get(`/${email}`);
+
+          //check hashed password to hashed password in database
+          let hashedPassword = await bcrypt.hash(
+            scene.inputElement.getChildByName('password'),
+            10
+          );
+
+          //run is authenticated, if true - store all user information somewhere where we can access it
+
+          //launch waitingroom scene
+
+          //if false flash error
         };
 
         scene.socket.emit('isKeyValid', input.value);
