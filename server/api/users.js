@@ -4,15 +4,22 @@ const {
 } = require('../db');
 module.exports = router;
 
-router.get('/:email', async (req, res, next) => {
+router.get('/email/:email', async (req, res, next) => {
   try {
-    const users = await User.findOne({
-      // explicitly select only the id and username fields - even though
-      // users' passwords are encrypted, it won't help if we just
-      // send everything to anyone who asks!
+    const user = await User.findOne({
       where: { email: req.params.email },
     });
-    res.json(users);
+    res.json(user);
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.get('/id/:id', async (req, res, next) => {
+  try {
+    const userId = req.params.id;
+    const user = await User.findByPk(userId);
+    res.json(user);
   } catch (err) {
     next(err);
   }
