@@ -6,12 +6,42 @@ export default class MainScene extends Phaser.Scene {
     this.state = {};
   }
 
-  create() {
-    const scene = this;
-    // << LOAD BACKGROUND AND FOREGROUND SCENES IN PARALLEL HERE >>
-    this.scene.launch('BgScene');
-    this.scene.launch('FgScene');
+  preload() {
+    this.load.tilemapTiledJSON(
+      'intermissionRoom',
+      'assets/backgrounds/intermissionRoom.json'
+    );
+    this.load.image('floors', 'assets/tilesets/Inside_A2.png');
+    this.load.image('walls', 'assets/tilesets/NewWalls.png');
+    this.load.image('furniture', 'assets/tilesets/Inside_Bv2.png');
+    this.load.image('tv', 'assets/tilesets/!TV_screens.png');
 
+    this.load.spritesheet('octo', 'assets/spriteSheets/octo.png', {
+      frameWidth: 18,
+      frameHeight: 18,
+    });
+  }
+
+  create() {
+    const map = this.make.tilemap({ key: 'intermissionRoom' });
+    const floorTiles = map.addTilesetImage('Inside_A2', 'floors');
+    const wallTiles = map.addTilesetImage('NewWalls', 'walls');
+    const furnitureTiles = map.addTilesetImage('Inside_Bv2', 'furniture');
+    const tvTiles = map.addTilesetImage('!TV_screens', 'tv');
+
+    //Now we recreate the layers from Tiled
+    const floor = map.createLayer('floor', floorTiles, 0, 0);
+    const walls = map.createLayer('walls', wallTiles, 0, 0);
+    const furniture = map.createLayer('furniture', furnitureTiles, 0, 0);
+    const tv = map.createLayer('tv', tvTiles, 0, 0);
+
+    this.physics.add.collider(this.player, walls);
+    // this.physics.add.collider(this.player, furniture);
+
+    walls.setCollisionBetween(228, 229);
+    // furniture.setCollisionByExclusion(-1, true);
+
+    const scene = this;
     this.cursors = this.input.keyboard.createCursorKeys();
 
     //CREATE SOCKET
