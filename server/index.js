@@ -10,6 +10,8 @@ const PORT = process.env.PORT || 8080;
 const app = express();
 const socketio = require('socket.io');
 
+const User = require('./db/models/User');
+
 const bcrypt = require('bcrypt');
 const passport = require('passport');
 const flash = require('express-flash');
@@ -60,6 +62,14 @@ const createApp = () => {
       res.send(req.user);
     }
   );
+
+  app.post('/register', checkNotAuthenticated, async (req, res, next) => {
+    try {
+      res.status(201).send(await User.create(req.body));
+    } catch (error) {
+      next(error);
+    }
+  });
 
   app.get('/whoami', (req, res) => {
     if (req.user) {

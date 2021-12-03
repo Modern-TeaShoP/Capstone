@@ -42,24 +42,35 @@ export default class LoginScene extends Phaser.Scene {
     });
 
     //right popup
-    scene.boxes.strokeRect(425, 200, 275, 100);
-    scene.boxes.fillRect(425, 200, 275, 100);
-    scene.inputElement = scene.add.dom(562.5, 250).createFromCache('loginform');
+    scene.boxes.strokeRect(250, 200, 275, 100);
+    scene.boxes.fillRect(250, 200, 275, 100);
+    scene.inputElement = scene.add.dom(400, 250).createFromCache('loginform');
     scene.inputElement.addListener('click');
     scene.inputElement.on('click', async function (event) {
       if (event.target.name === 'submitLogin') {
-        console.log('BUTTON PRESSED');
+        const email = scene.inputElement.getChildByName('email').value;
 
-        const email = scene.inputElement.getChildByName('email');
+        const password = scene.inputElement.getChildByName('password').value;
 
-        const password = scene.inputElement.getChildByName('password');
+        console.log(email, password);
 
-        console.log(email.value, password.value);
+        const foundUser = await axios.post('http://localhost:8080/login', {
+          email,
+          password,
+        });
 
-        await axios.post('/login', email.value, password.value);
+        if (foundUser !== null) {
+          scene.scene.stop('LoginScene');
+          scene.scene.launch('WaitingRoom', { socket: scene.socket });
+          // scene.scene.start('WaitingRoom');
+        }
 
         //axios calls go here
         //this will need to be async
+      }
+      if (event.target.name === 'launchRegister') {
+        scene.scene.stop('LoginScene');
+        scene.scene.launch('RegisterScene', { socket: scene.socket });
       }
     });
   }

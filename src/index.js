@@ -20,6 +20,7 @@ import MainScene from './scenes/MainScene';
 import FgScene from './scenes/FgScene';
 import WaitingRoom from './scenes/WaitingRoom';
 import LoginScene from './scenes/LoginScene';
+import RegisterScene from './scenes/RegisterScene';
 
 class Game extends Phaser.Game {
   constructor() {
@@ -33,6 +34,7 @@ class Game extends Phaser.Game {
     this.scene.add('MainScene', MainScene);
     this.scene.add('WaitingRoom', WaitingRoom);
     this.scene.add('LoginScene', LoginScene);
+    this.scene.add('RegisterScene', RegisterScene);
 
     // Start the game with the mainscene
     // << START GAME WITH MAIN SCENE HERE >>
