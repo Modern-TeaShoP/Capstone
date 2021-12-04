@@ -74,10 +74,10 @@ export default class IntermissionRoom extends Phaser.Scene {
     //Here is where we call the createAnimations function that we've created between the create and update methods. If we don't call this here, there won't be any motion!
     this.createAnimations();
 
-    walls.setCollisionBetween(1, 300);
-    this.physics.add.collider(this.player, walls);
+    // map.setCollisionBetween(1, 999, true, "walls");
+    // walls.setCollisionBetween(1, 300);
+    // this.physics.add.collider(this.player, walls);
     // this.physics.add.collider(this.player, furniture);
-
     // furniture.setCollisionByExclusion(-1, true);
   }
 
@@ -96,6 +96,7 @@ export default class IntermissionRoom extends Phaser.Scene {
     //The "frames" key is where we'll pick exactly which frames we want from the spritesheet, and put them in the order we want for the animation.
     //Duration indicates how long the frame will last. Not sure if it matters terribly, but if you don't include a duration, you'll get an error.
     //FrameRate is the speed which you cycle through the frames in your animation. Higher frameRate is a faster cycle.
+    //Repeat tells how many times the anmation will repeat *after running when it's called*. A value of -1 results in an infinite animation loop as long as the animation is present.
     this.anims.create({
       key: "walkDown",
       frames: [
@@ -178,5 +179,6 @@ export default class IntermissionRoom extends Phaser.Scene {
     //Here, we're sending a call to the update function attached to this.player. In this case, it's OctoGuy's update function.
     //Note that we're passing our custom cursors through. The arguments of update will be everything OctoGuy's update function is looking for.
     this.player.update(this.cursors);
+    // this.game.physics.arcade.collide(this.player, walls);
   }
 }
