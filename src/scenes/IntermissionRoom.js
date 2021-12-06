@@ -1,5 +1,6 @@
 import "phaser";
 import OctoGuy from "../entity/OctoGuy";
+import Furniture from "../entity/Furniture";
 
 export default class IntermissionRoom extends Phaser.Scene {
   constructor() {
@@ -22,6 +23,22 @@ export default class IntermissionRoom extends Phaser.Scene {
     this.load.image("furniture", "assets/tilesets/Inside_Bv2.png");
     this.load.image("tv", "assets/tilesets/!TV_screens.png");
 
+    //Just for ease of reading, I've separated the images I want to collide with from the tilesets. These follow the same parameter conventions as above.
+    //I'm too dumb to figure out how to import collisions from Tiled, so we're gonna do this the old fashioned way.
+    this.load.image("wallCollider", "assets/colliders/WallCollider.png");
+    this.load.image("tableCollider", "assets/colliders/TableCollider.png");
+    this.load.image("toiletCollider", "assets/colliders/ToiletCollider.png");
+    this.load.image("redBedCollider", "assets/colliders/RedBedCollider.png");
+    this.load.image("purpBedCollider", "assets/colliders/PurpBedCollider.png");
+    this.load.image(
+      "redBedBotCollider",
+      "assets/colliders/RedBedBotCollider.png"
+    );
+    this.load.image(
+      "purpBedBotCollider",
+      "assets/colliders/PurpBedBotCollider.png"
+    );
+
     //Now we'll preload our character as well. Notice the load command here isn't an image, but a spritesheet.
     //The first argument is the key word we'll use to create it later. The second is the path to the sheet.
     //IMPORTANTLY, the third argument is the dimensions of each sprite on your spritesheet!
@@ -33,9 +50,6 @@ export default class IntermissionRoom extends Phaser.Scene {
         frameHeight: 27,
       }
     );
-
-    // this.cursors;
-    // this.load.
   }
 
   create() {
@@ -55,11 +69,32 @@ export default class IntermissionRoom extends Phaser.Scene {
     const furniture = map.createLayer("furniture", furnitureTiles, 0, 0);
     const tv = map.createLayer("tv", tvTiles, 0, 0);
 
+    //Using this line, we create a group that will encompass all the furniture, or otherwise all the collidable, non-interactive object in the game world.
+    //Then we'll use the helper function to make our furniture. We'll make a new function for each type of furniture.
+    //Doing it this way, you'll need to manually put in the x and y values of the item. Kind of a pain, but we're stuck with it for now.
+    this.furnitureGroup = this.physics.add.staticGroup({
+      classType: Furniture,
+    });
+    this.createWalls(792, 32);
+    this.createToilets(696, 824);
+    this.createToilets(840, 824);
+    this.createTables(599, 443);
+    this.createTables(983, 443);
+    this.createRedBeds(48, 240);
+    this.createRedBeds(48, 528);
+    this.createPurpBeds(1535, 240);
+    this.createPurpBeds(1535, 528);
+
     //This is where we create our character on screen. We're calling in the OctoGuy component we've created, and assigning all of its accompanying methods to player.
-    //The first arg is the scene (this makes sense), then the x coordinate, the y coordinate, and the last is the key that we've named this asset in the preload method.
+    //The first arg is the scene ("this" makes sense), then the x coordinate, the y coordinate, and the last is the key that we've named this asset in the preload method.
     //The setScale method dynamically changes the size of the sprite being rendered on screen.
     //Don't forget to import your entity component at the top of the scene file, or it won't load anything!
-    this.player = new OctoGuy(this, 300, 200, "octoGuy").setScale(2.3);
+    this.player = new OctoGuy(
+      this,
+      Phaser.Math.Between(300, 1300),
+      Phaser.Math.Between(200, 700),
+      "octoGuy"
+    ).setScale(2.3);
 
     //This looks like a solid block of text, but it's actually pretty intuitive.
     //For this scene, we're setting the cursors property to something other than the default arrow keys.
@@ -74,11 +109,12 @@ export default class IntermissionRoom extends Phaser.Scene {
     //Here is where we call the createAnimations function that we've created between the create and update methods. If we don't call this here, there won't be any motion!
     this.createAnimations();
 
-    // map.setCollisionBetween(1, 999, true, "walls");
-    // walls.setCollisionBetween(1, 300);
-    // this.physics.add.collider(this.player, walls);
-    // this.physics.add.collider(this.player, furniture);
-    // furniture.setCollisionByExclusion(-1, true);
+    //These two lines make it so that the player stops when they hit the edges of the canvas.
+    this.player.setCollideWorldBounds(true);
+    this.player.onWorldBounds = true;
+
+    //The collider lines makes sure the player runs into these furniture objects, rather than going through.
+    this.physics.add.collider(this.player, this.furnitureGroup);
   }
 
   //This helper function will create our animations for the OctoGuy character walking around on the screen.
@@ -174,11 +210,39 @@ export default class IntermissionRoom extends Phaser.Scene {
     });
   }
 
+  //These next few functions are creating our collidable furniture.
+  createWalls(x, y) {
+    this.furnitureGroup.create(x, y, "wallCollider");
+  }
+
+  createTables(x, y) {
+    this.furnitureGroup.create(x, y, "tableCollider");
+  }
+
+  createToilets(x, y) {
+    this.furnitureGroup.create(x, y, "toiletCollider");
+  }
+
+  createRedBeds(x, y) {
+    this.furnitureGroup.create(x, y, "redBedCollider");
+  }
+
+  createRedBedBots(x, y) {
+    this.furnitureGroup.create(x, y, "redBedBotCollider");
+  }
+
+  createPurpBeds(x, y) {
+    this.furnitureGroup.create(x, y, "purpBedCollider");
+  }
+
+  createPurpBedBots(x, y) {
+    this.furnitureGroup.create(x, y, "purpBedBotCollider");
+  }
+
   //The update method handles changes to the various pieces of the scene.
   update(time, delta) {
     //Here, we're sending a call to the update function attached to this.player. In this case, it's OctoGuy's update function.
     //Note that we're passing our custom cursors through. The arguments of update will be everything OctoGuy's update function is looking for.
     this.player.update(this.cursors);
-    // this.game.physics.arcade.collide(this.player, walls);
   }
 }
