@@ -82,8 +82,12 @@ export default class IntermissionRoom extends Phaser.Scene {
     this.createTables(983, 443);
     this.createRedBeds(48, 240);
     this.createRedBeds(48, 528);
-    this.createPurpBeds(1535, 240);
-    this.createPurpBeds(1535, 528);
+    this.createPurpBeds(1536, 240);
+    this.createPurpBeds(1536, 528);
+    this.createRedBedBots(480, 816);
+    this.createRedBedBots(1344, 816);
+    this.createPurpBedBots(240, 816);
+    this.createPurpBedBots(1057, 816);
 
     //This is where we create our character on screen. We're calling in the OctoGuy component we've created, and assigning all of its accompanying methods to player.
     //The first arg is the scene ("this" makes sense), then the x coordinate, the y coordinate, and the last is the key that we've named this asset in the preload method.

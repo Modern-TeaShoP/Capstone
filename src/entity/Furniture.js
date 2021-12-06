@@ -6,6 +6,8 @@ export default class Furniture extends Phaser.Physics.Arcade.Sprite {
     this.scene = scene;
     this.scene.physics.world.enable(this);
     this.scene.add.existing(this);
+    this.enableBody = true;
+    this.body.immovable = true;
   }
 
   update() {}
