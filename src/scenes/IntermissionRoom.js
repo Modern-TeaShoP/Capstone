@@ -118,7 +118,6 @@ export default class IntermissionRoom extends Phaser.Scene {
 
     this.socket.on('newPlayer', function (arg) {
       console.log('IN NEW PLAYER SOCKET.ON');
-      console.log("Please rebundle")
       const { playerInfo, numPlayers } = arg;
       scene.addOtherPlayers(scene, playerInfo);
       scene.state.numPlayers = numPlayers;
