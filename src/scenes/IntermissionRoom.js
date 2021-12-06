@@ -38,6 +38,14 @@ export default class IntermissionRoom extends Phaser.Scene {
       "purpBedBotCollider",
       "assets/colliders/PurpBedBotCollider.png"
     );
+    this.load.image(
+      "bottomEdgeCollider",
+      "assets/colliders/BottomEdgeCollider.png"
+    );
+    this.load.image(
+      "rightEdgeCollider",
+      "assets/colliders/RightEdgeCollider.png"
+    );
 
     //Now we'll preload our character as well. Notice the load command here isn't an image, but a spritesheet.
     //The first argument is the key word we'll use to create it later. The second is the path to the sheet.
@@ -72,7 +80,8 @@ export default class IntermissionRoom extends Phaser.Scene {
     //Using this line, we create a group that will encompass all the furniture, or otherwise all the collidable, non-interactive object in the game world.
     //Then we'll use the helper function to make our furniture. We'll make a new function for each type of furniture.
     //Doing it this way, you'll need to manually put in the x and y values of the item. Kind of a pain, but we're stuck with it for now.
-    this.furnitureGroup = this.physics.add.staticGroup({
+    //Finally, we're setting each child within this group to be immovable. This means when the player collides with them, they stay put.
+    this.furnitureGroup = this.physics.add.group({
       classType: Furniture,
     });
     this.createWalls(792, 32);
@@ -88,7 +97,11 @@ export default class IntermissionRoom extends Phaser.Scene {
     this.createRedBedBots(1344, 816);
     this.createPurpBedBots(240, 816);
     this.createPurpBedBots(1057, 816);
-    console.log(this.furnitureGroup);
+    this.createBottomEdge(801, 882);
+    this.createRightEdge(1592, 430);
+    this.furnitureGroup.children.each((gameObj) => {
+      gameObj.setImmovable(true);
+    });
 
     //This is where we create our character on screen. We're calling in the OctoGuy component we've created, and assigning all of its accompanying methods to player.
     //The first arg is the scene ("this" makes sense), then the x coordinate, the y coordinate, and the last is the key that we've named this asset in the preload method.
@@ -118,7 +131,7 @@ export default class IntermissionRoom extends Phaser.Scene {
     this.player.setCollideWorldBounds(true);
     this.player.onWorldBounds = true;
 
-    //The collider lines makes sure the player runs into these furniture objects, rather than going through.
+    //The collider line makes sure the player runs into the furniture objects, rather than going through.
     this.physics.add.collider(this.player, this.furnitureGroup);
   }
 
@@ -242,6 +255,14 @@ export default class IntermissionRoom extends Phaser.Scene {
 
   createPurpBedBots(x, y) {
     this.furnitureGroup.create(x, y, "purpBedBotCollider");
+  }
+
+  createBottomEdge(x, y) {
+    this.furnitureGroup.create(x, y, "bottomEdgeCollider");
+  }
+
+  createRightEdge(x, y) {
+    this.furnitureGroup.create(x, y, "rightEdgeCollider");
   }
 
   //The update method handles changes to the various pieces of the scene.
