@@ -4,9 +4,8 @@ const User = require('../db/models/User');
 
 function initialize(passport) {
   const authenticateUser = async (email, password, done) => {
-    console.log('******', email, password);
     const foundUser = await User.findOne({ where: { email: email } });
-    console.log(foundUser, '**********');
+    // console.log(foundUser, '**********'); We should do something globally with this to load in the future
     if (password === foundUser.password) {
       return done(null, foundUser);
     } else {

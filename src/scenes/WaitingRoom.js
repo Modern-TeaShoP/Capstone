@@ -57,7 +57,6 @@ export default class WaitingRoom extends Phaser.Scene {
     scene.inputElement.on('click', function (event) {
       if (event.target.name === 'enterRoom') {
         const input = scene.inputElement.getChildByName('code-form');
-        console.log(input, '********');
 
         scene.socket.emit('isKeyValid', input.value);
       }
@@ -90,6 +89,7 @@ export default class WaitingRoom extends Phaser.Scene {
     scene.socket.on('keyIsValid', function (input) {
       scene.socket.emit('joinRoom', input);
       scene.scene.stop('WaitingRoom');
+      scene.scene.start('IntermissionRoom', { socket: scene.socket });
     });
   }
   update() {}

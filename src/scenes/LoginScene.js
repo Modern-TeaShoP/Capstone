@@ -52,8 +52,6 @@ export default class LoginScene extends Phaser.Scene {
 
         const password = scene.inputElement.getChildByName('password').value;
 
-        console.log(email, password);
-
         const foundUser = await axios.post('http://localhost:8080/login', {
           email,
           password,
