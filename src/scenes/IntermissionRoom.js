@@ -1,5 +1,6 @@
 import 'phaser';
 import OctoGuy from '../entity/OctoGuy';
+import Furniture from '../entity/Furniture';
 
 export default class IntermissionRoom extends Phaser.Scene {
   constructor() {
@@ -26,6 +27,30 @@ export default class IntermissionRoom extends Phaser.Scene {
     this.load.image('furniture', 'assets/tilesets/Inside_Bv2.png');
     this.load.image('tv', 'assets/tilesets/!TV_screens.png');
 
+    //Just for ease of reading, I've separated the images I want to collide with from the tilesets. These follow the same parameter conventions as above.
+    //I'm too dumb to figure out how to import collisions from Tiled, so we're gonna do this the old fashioned way.
+    this.load.image('wallCollider', 'assets/colliders/WallCollider.png');
+    this.load.image('tableCollider', 'assets/colliders/TableCollider.png');
+    this.load.image('toiletCollider', 'assets/colliders/ToiletCollider.png');
+    this.load.image('redBedCollider', 'assets/colliders/RedBedCollider.png');
+    this.load.image('purpBedCollider', 'assets/colliders/PurpBedCollider.png');
+    this.load.image(
+      'redBedBotCollider',
+      'assets/colliders/RedBedBotCollider.png'
+    );
+    this.load.image(
+      'purpBedBotCollider',
+      'assets/colliders/PurpBedBotCollider.png'
+    );
+    this.load.image(
+      'bottomEdgeCollider',
+      'assets/colliders/BottomEdgeCollider.png'
+    );
+    this.load.image(
+      'rightEdgeCollider',
+      'assets/colliders/RightEdgeCollider.png'
+    );
+
     //Now we'll preload our character as well. Notice the load command here isn't an image, but a spritesheet.
     //The first argument is the key word we'll use to create it later. The second is the path to the sheet.
     //IMPORTANTLY, the third argument is the dimensions of each sprite on your spritesheet!
@@ -37,9 +62,6 @@ export default class IntermissionRoom extends Phaser.Scene {
         frameHeight: 27,
       }
     );
-
-    // this.cursors;
-    // this.load.
   }
 
   create() {
@@ -61,8 +83,34 @@ export default class IntermissionRoom extends Phaser.Scene {
     const furniture = map.createLayer('furniture', furnitureTiles, 0, 0);
     const tv = map.createLayer('tv', tvTiles, 0, 0);
 
+    //Using this line, we create a group that will encompass all the furniture, or otherwise all the collidable, non-interactive object in the game world.
+    //Then we'll use the helper function to make our furniture. We'll make a new function for each type of furniture.
+    //Doing it this way, you'll need to manually put in the x and y values of the item. Kind of a pain, but we're stuck with it for now.
+    //Finally, we're setting each child within this group to be immovable. This means when the player collides with them, they stay put.
+    this.furnitureGroup = this.physics.add.group({
+      classType: Furniture,
+    });
+    this.createWalls(792, 32);
+    this.createToilets(696, 824);
+    this.createToilets(840, 824);
+    this.createTables(599, 443);
+    this.createTables(983, 443);
+    this.createRedBeds(48, 240);
+    this.createRedBeds(48, 528);
+    this.createPurpBeds(1536, 240);
+    this.createPurpBeds(1536, 528);
+    this.createRedBedBots(480, 816);
+    this.createRedBedBots(1344, 816);
+    this.createPurpBedBots(240, 816);
+    this.createPurpBedBots(1057, 816);
+    this.createBottomEdge(801, 882);
+    this.createRightEdge(1592, 430);
+    this.furnitureGroup.children.each((gameObj) => {
+      gameObj.setImmovable(true);
+    });
+
     //This is where we create our character on screen. We're calling in the OctoGuy component we've created, and assigning all of its accompanying methods to player.
-    //The first arg is the scene (this makes sense), then the x coordinate, the y coordinate, and the last is the key that we've named this asset in the preload method.
+    //The first arg is the scene ("this" makes sense), then the x coordinate, the y coordinate, and the last is the key that we've named this asset in the preload method.
     //The setScale method dynamically changes the size of the sprite being rendered on screen.
     //Don't forget to import your entity component at the top of the scene file, or it won't load anything!
 
@@ -80,12 +128,6 @@ export default class IntermissionRoom extends Phaser.Scene {
 
     //Here is where we call the createAnimations function that we've created between the create and update methods. If we don't call this here, there won't be any motion!
     this.createAnimations();
-
-    walls.setCollisionBetween(1, 300);
-    // this.physics.add.collider(this.player, walls);
-    // this.physics.add.collider(this.player, furniture);
-
-    // furniture.setCollisionByExclusion(-1, true);
 
     // CREATE OTHER PLAYERS GROUP
     this.otherPlayers = this.physics.add.group();
@@ -161,6 +203,7 @@ export default class IntermissionRoom extends Phaser.Scene {
     //The "frames" key is where we'll pick exactly which frames we want from the spritesheet, and put them in the order we want for the animation.
     //Duration indicates how long the frame will last. Not sure if it matters terribly, but if you don't include a duration, you'll get an error.
     //FrameRate is the speed which you cycle through the frames in your animation. Higher frameRate is a faster cycle.
+    //Repeat tells how many times the anmation will repeat *after running when it's called*. A value of -1 results in an infinite animation loop as long as the animation is present.
     this.anims.create({
       key: 'walkDown',
       frames: [
@@ -238,6 +281,43 @@ export default class IntermissionRoom extends Phaser.Scene {
     });
   }
 
+  //These next few functions are creating our collidable furniture, and adding them to the furniture group, defined above.
+  createWalls(x, y) {
+    this.furnitureGroup.create(x, y, 'wallCollider');
+  }
+
+  createTables(x, y) {
+    this.furnitureGroup.create(x, y, 'tableCollider');
+  }
+
+  createToilets(x, y) {
+    this.furnitureGroup.create(x, y, 'toiletCollider');
+  }
+
+  createRedBeds(x, y) {
+    this.furnitureGroup.create(x, y, 'redBedCollider');
+  }
+
+  createRedBedBots(x, y) {
+    this.furnitureGroup.create(x, y, 'redBedBotCollider');
+  }
+
+  createPurpBeds(x, y) {
+    this.furnitureGroup.create(x, y, 'purpBedCollider');
+  }
+
+  createPurpBedBots(x, y) {
+    this.furnitureGroup.create(x, y, 'purpBedBotCollider');
+  }
+
+  createBottomEdge(x, y) {
+    this.furnitureGroup.create(x, y, 'bottomEdgeCollider');
+  }
+
+  createRightEdge(x, y) {
+    this.furnitureGroup.create(x, y, 'rightEdgeCollider');
+  }
+
   //The update method handles changes to the various pieces of the scene.
   update(time, delta) {
     const scene = this;
@@ -245,6 +325,13 @@ export default class IntermissionRoom extends Phaser.Scene {
     //Note that we're passing our custom cursors through. The arguments of update will be everything OctoGuy's update function is looking for.
     if (this.octoGuy) {
       this.octoGuy.update(this.cursors);
+
+      //These two lines make it so that the player stops when they hit the edges of the canvas.
+      this.octoGuy.setCollideWorldBounds(true);
+      this.octoGuy.onWorldBounds = true;
+
+      //The collider line makes sure the player runs into the furniture objects, rather than going through.
+      this.physics.add.collider(this.octoGuy, this.furnitureGroup);
 
       // emit player movement
       var x = this.octoGuy.x;
