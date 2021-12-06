@@ -10,15 +10,16 @@ const gameRooms = {
 };
 
 module.exports = (io) => {
-  io.on("connection", (socket) => {
+  io.on('connection', (socket) => {
     console.log(
       `A socket connection to the server has been made: ${socket.id}`
     );
 
-    socket.on("joinRoom", (roomKey) => {
+    socket.on('joinRoom', (roomKey) => {
+      console.log('WE HIT THE JOIN ROOM SOCKET.ON');
       socket.join(roomKey);
       const roomInfo = gameRooms[roomKey];
-      console.log("roomInfo", roomInfo);
+      // console.log('roomInfo', roomInfo);
       roomInfo.players[socket.id] = {
         rotation: 0,
         x: 400,
@@ -28,42 +29,44 @@ module.exports = (io) => {
 
       // update number of players
       roomInfo.numPlayers = Object.keys(roomInfo.players).length;
+      console.log('updated room info', roomInfo);
 
+      //****** for some reason we aren't emiting setState or currentPlayers, even though we do emit the 'newPlayer' */
       // set initial state
-      socket.emit("setState", roomInfo);
+      socket.emit('setState', roomInfo);
 
       // send the players object to the new player
-      socket.emit("currentPlayers", {
+      socket.emit('currentPlayers', {
         players: roomInfo.players,
         numPlayers: roomInfo.numPlayers,
       });
 
       // update all other players of the new player
-      socket.to(roomKey).emit("newPlayer", {
+      socket.to(roomKey).emit('newPlayer', {
         playerInfo: roomInfo.players[socket.id],
         numPlayers: roomInfo.numPlayers,
       });
     });
 
     // when a player moves, update the player data
-    socket.on("playerMovement", function (data) {
+    socket.on('playerMovement', function (data) {
       const { x, y, roomKey } = data;
       gameRooms[roomKey].players[socket.id].x = x;
       gameRooms[roomKey].players[socket.id].y = y;
       // emit a message to all players about the player that moved
       socket
         .to(roomKey)
-        .emit("playerMoved", gameRooms[roomKey].players[socket.id]);
+        .emit('playerMoved', gameRooms[roomKey].players[socket.id]);
     });
 
-    socket.on("isKeyValid", function (input) {
+    socket.on('isKeyValid', function (input) {
       Object.keys(gameRooms).includes(input)
-        ? socket.emit("keyIsValid", input)
-        : socket.emit("keyNotValid");
+        ? socket.emit('keyIsValid', input)
+        : socket.emit('keyNotValid');
     });
 
     // get a random code for the room
-    socket.on("getRoomCode", async function () {
+    socket.on('getRoomCode', async function () {
       let key = codeGenerator();
       while (Object.keys(gameRooms).includes(key)) {
         key = codeGenerator();
@@ -73,11 +76,11 @@ module.exports = (io) => {
         players: {},
         numPlayers: 0,
       };
-      socket.emit("roomCreated", key);
+      socket.emit('roomCreated', key);
     });
 
     // when a player disconnects, remove them from our players object
-    socket.on("disconnect", function () {
+    socket.on('disconnect', function () {
       let roomKey = 0;
       for (let keys1 in gameRooms) {
         for (let keys2 in gameRooms[keys1]) {
@@ -92,13 +95,13 @@ module.exports = (io) => {
       const roomInfo = gameRooms[roomKey];
 
       if (roomInfo) {
-        console.log("user disconnected: ", socket.id);
+        console.log('user disconnected: ', socket.id);
         //remove this player from our players object
         delete roomInfo.players[socket.id];
         //update numPlayers
         roomInfo.numPlayers = Object.keys(roomInfo.players).length;
         //emit a message to all players to remove this player
-        io.to(roomKey).emit("disconnected", {
+        io.to(roomKey).emit('disconnected', {
           playerId: socket.id,
           numPlayers: roomInfo.numPlayers,
         });
@@ -108,8 +111,8 @@ module.exports = (io) => {
 };
 
 function codeGenerator() {
-  let code = "";
-  let chars = "ABCDEFGHJKLMNPQRSTUVWXYZ0123456789";
+  let code = '';
+  let chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ0123456789';
   for (let i = 0; i < 5; i++) {
     code += chars.charAt(Math.floor(Math.random() * chars.length));
   }
