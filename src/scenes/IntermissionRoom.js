@@ -104,7 +104,6 @@ export default class IntermissionRoom extends Phaser.Scene {
 
     // PLAYERS
     this.socket.on('currentPlayers', function (arg) {
-      console.log('in currentPlayers socket.on');
       const { players, numPlayers } = arg;
       scene.state.numPlayers = numPlayers;
       Object.keys(players).forEach(function (id) {
@@ -117,7 +116,6 @@ export default class IntermissionRoom extends Phaser.Scene {
     });
 
     this.socket.on('newPlayer', function (arg) {
-      console.log('IN NEW PLAYER SOCKET.ON');
       const { playerInfo, numPlayers } = arg;
       scene.addOtherPlayers(scene, playerInfo);
       scene.state.numPlayers = numPlayers;
@@ -129,6 +127,7 @@ export default class IntermissionRoom extends Phaser.Scene {
         if (playerInfo.playerId === otherPlayer.playerId) {
           const oldX = otherPlayer.x;
           const oldY = otherPlayer.y;
+          otherPlayer.play('walkRight');
           otherPlayer.setPosition(playerInfo.x, playerInfo.y);
         }
       });
