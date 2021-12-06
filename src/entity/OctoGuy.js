@@ -1,7 +1,7 @@
-import "phaser";
+import 'phaser';
 
 export default class OctoGuy extends Phaser.Physics.Arcade.Sprite {
-  constructor(scene, x, y, spriteKey) {
+  constructor(scene, x, y, spriteKey, socket) {
     super(scene, x, y, spriteKey);
 
     //Here, we're prepping our octoGuy to be added to any scene.
@@ -9,6 +9,7 @@ export default class OctoGuy extends Phaser.Physics.Arcade.Sprite {
     this.scene = scene;
     this.scene.add.existing(this);
     this.scene.physics.world.enable(this);
+    this.socket = socket;
 
     //The facing object here is used to keep track of which direction the character is facing so that we can play the correct idle animation when movement stops.
     this.facing = {
@@ -27,7 +28,7 @@ export default class OctoGuy extends Phaser.Physics.Arcade.Sprite {
     //If it's left out, or turned to false, it will run when the key is released, rather than when it's pressed.
     if (cursors.left.isDown) {
       if (!cursors.up.isDown && !cursors.down.isDown) {
-        this.play("walkLeft", true);
+        this.play('walkLeft', true);
       }
       this.setVelocityX(-150);
       this.facing.left = true;
@@ -37,7 +38,7 @@ export default class OctoGuy extends Phaser.Physics.Arcade.Sprite {
     //Notice we're setting the right facing to true. It comes in handy once we stop moving.
     else if (cursors.right.isDown) {
       if (!cursors.up.isDown && !cursors.down.isDown) {
-        this.play("walkRight", true);
+        this.play('walkRight', true);
       }
       this.setVelocityX(150);
       this.facing.right = true;
@@ -50,9 +51,9 @@ export default class OctoGuy extends Phaser.Physics.Arcade.Sprite {
       this.setVelocityX(0);
 
       if (this.facing.left === true) {
-        this.play("idleLeft");
+        this.play('idleLeft');
       } else if (this.facing.right === true) {
-        this.play("idleRight");
+        this.play('idleRight');
       }
 
       this.facing.left = false;
@@ -66,7 +67,7 @@ export default class OctoGuy extends Phaser.Physics.Arcade.Sprite {
       (cursors.up.isDown && cursors.left.isDown) ||
       (cursors.up.isDown && cursors.right.isDown)
     ) {
-      this.play("walkUp", true);
+      this.play('walkUp', true);
       this.setVelocityY(-150);
       this.facing.up = true;
     }
@@ -77,7 +78,7 @@ export default class OctoGuy extends Phaser.Physics.Arcade.Sprite {
       (cursors.down.isDown && cursors.left.isDown) ||
       (cursors.down.isDown && cursors.right.isDown)
     ) {
-      this.play("walkDown", true);
+      this.play('walkDown', true);
       this.setVelocityY(150);
       this.facing.down = true;
     }
@@ -87,9 +88,9 @@ export default class OctoGuy extends Phaser.Physics.Arcade.Sprite {
       this.setVelocityY(0);
 
       if (this.facing.up === true) {
-        this.play("idleUp");
+        this.play('idleUp');
       } else if (this.facing.down === true) {
-        this.play("idleDown");
+        this.play('idleDown');
       }
 
       this.facing.up = false;

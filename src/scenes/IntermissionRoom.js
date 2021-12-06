@@ -5,6 +5,10 @@ import Furniture from "../entity/Furniture";
 export default class IntermissionRoom extends Phaser.Scene {
   constructor() {
     super("IntermissionRoom");
+    this.state = {};
+  }
+  init(data) {
+    this.socket = data.socket;
   }
 
   preload() {
@@ -61,6 +65,8 @@ export default class IntermissionRoom extends Phaser.Scene {
   }
 
   create() {
+    const scene = this;
+    // this.socket = io();
     //In the create method, we need to make the tilemap, where the key's value is the first argument that we passed when loading the tileset.
     const map = this.make.tilemap({ key: "intermissionRoom" });
 
@@ -107,12 +113,8 @@ export default class IntermissionRoom extends Phaser.Scene {
     //The first arg is the scene ("this" makes sense), then the x coordinate, the y coordinate, and the last is the key that we've named this asset in the preload method.
     //The setScale method dynamically changes the size of the sprite being rendered on screen.
     //Don't forget to import your entity component at the top of the scene file, or it won't load anything!
-    this.player = new OctoGuy(
-      this,
-      Phaser.Math.Between(300, 1300),
-      Phaser.Math.Between(200, 700),
-      "octoGuy"
-    ).setScale(2.3);
+
+    // this.player = new OctoGuy(this, 300, 200, 'octoGuy').setScale(2.3);
 
     //This looks like a solid block of text, but it's actually pretty intuitive.
     //For this scene, we're setting the cursors property to something other than the default arrow keys.
@@ -133,6 +135,69 @@ export default class IntermissionRoom extends Phaser.Scene {
 
     //The collider line makes sure the player runs into the furniture objects, rather than going through.
     this.physics.add.collider(this.player, this.furnitureGroup);
+    // walls.setCollisionBetween(1, 300);
+    // this.physics.add.collider(this.player, walls);
+    // this.physics.add.collider(this.player, furniture);
+
+    // furniture.setCollisionByExclusion(-1, true);
+
+    // CREATE OTHER PLAYERS GROUP
+    this.otherPlayers = this.physics.add.group();
+
+    // JOINED ROOM - SET STATE
+    this.socket.on("setState", function (state) {
+      console.log("in setState socket.on");
+      const { roomKey, players, numPlayers } = state;
+      scene.physics.resume();
+
+      // STATE
+      scene.state.roomKey = roomKey;
+      scene.state.players = players;
+      scene.state.numPlayers = numPlayers;
+    });
+
+    // PLAYERS
+    this.socket.on("currentPlayers", function (arg) {
+      console.log("in currentPlayers socket.on");
+      const { players, numPlayers } = arg;
+      scene.state.numPlayers = numPlayers;
+      Object.keys(players).forEach(function (id) {
+        if (players[id].playerId === scene.socket.id) {
+          scene.addPlayer(scene, players[id]);
+        } else {
+          scene.addOtherPlayers(scene, players[id]);
+        }
+      });
+    });
+
+    this.socket.on("newPlayer", function (arg) {
+      console.log("IN NEW PLAYER SOCKET.ON");
+      const { playerInfo, numPlayers } = arg;
+      scene.addOtherPlayers(scene, playerInfo);
+      scene.state.numPlayers = numPlayers;
+      console.log("number of players", scene.state.numPlayers);
+    });
+
+    this.socket.on("playerMoved", function (playerInfo) {
+      scene.otherPlayers.getChildren().forEach(function (otherPlayer) {
+        if (playerInfo.playerId === otherPlayer.playerId) {
+          const oldX = otherPlayer.x;
+          const oldY = otherPlayer.y;
+          otherPlayer.setPosition(playerInfo.x, playerInfo.y);
+        }
+      });
+    });
+
+    //Disconnect
+    this.socket.on("disconnected", function (arg) {
+      const { playerId, numPlayers } = arg;
+      scene.state.numPlayers = numPlayers;
+      scene.otherPlayers.getChildren().forEach(function (otherPlayer) {
+        if (playerId === otherPlayer.playerId) {
+          otherPlayer.destroy();
+        }
+      });
+    });
   }
 
   //This helper function will create our animations for the OctoGuy character walking around on the screen.
@@ -267,8 +332,66 @@ export default class IntermissionRoom extends Phaser.Scene {
 
   //The update method handles changes to the various pieces of the scene.
   update(time, delta) {
+    const scene = this;
     //Here, we're sending a call to the update function attached to this.player. In this case, it's OctoGuy's update function.
     //Note that we're passing our custom cursors through. The arguments of update will be everything OctoGuy's update function is looking for.
-    this.player.update(this.cursors);
+    if (this.octoGuy) {
+      this.octoGuy.update(this.cursors);
+
+      // emit player movement
+      var x = this.octoGuy.x;
+      var y = this.octoGuy.y;
+      if (
+        this.octoGuy.oldPosition &&
+        (x !== this.octoGuy.oldPosition.x || y !== this.octoGuy.oldPosition.y)
+      ) {
+        this.moving = true;
+        this.socket.emit("playerMovement", {
+          x: this.octoGuy.x,
+          y: this.octoGuy.y,
+          roomKey: scene.state.roomKey,
+        });
+      }
+      // save old position data
+      this.octoGuy.oldPosition = {
+        x: this.octoGuy.x,
+        y: this.octoGuy.y,
+        rotation: this.octoGuy.rotation,
+      };
+    }
   }
+
+  addPlayer(scene, playerInfo) {
+    console.log("IN ADD PLAYER FUNCTION");
+    scene.joined = true;
+    scene.octoGuy = new OctoGuy(scene, 300, 200, "octoGuy").setScale(2.3);
+  }
+
+  addOtherPlayers(scene, playerInfo) {
+    console.log("IN ADD OTHER PLAYERS FUNCTION");
+    const otherPlayer = new OctoGuy(scene, 340, 240, "octoGuy").setScale(2.3);
+    otherPlayer.playerId = playerInfo.playerId;
+    scene.otherPlayers.add(otherPlayer);
+  }
+
+  // addPlayer(scene, playerInfo) {
+  //   console.log('IN ADDPLAYER FUNCTION');
+  //   scene.joined = true;
+  //   scene.octoGuy = scene.physics.add
+  //     .sprite(playerInfo.x, playerInfo.y, 'octoGuy')
+  //     .setOrigin(0.5, 0.5)
+  //     .setSize(30, 40)
+  //     .setOffset(0, 24);
+  // }
+
+  // addOtherPlayers(scene, playerInfo) {
+  //   console.log('IN ADD OTHERPLAYERS FUNCTION');
+  //   const otherPlayer = scene.add.sprite(
+  //     playerInfo.x + 40,
+  //     playerInfo.y + 40,
+  //     'octoGuy'
+  //   );
+  //   otherPlayer.playerId = playerInfo.playerId;
+  //   scene.otherPlayers.add(otherPlayer);
+  // }
 }
