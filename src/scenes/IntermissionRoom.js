@@ -88,6 +88,7 @@ export default class IntermissionRoom extends Phaser.Scene {
     this.createRedBedBots(1344, 816);
     this.createPurpBedBots(240, 816);
     this.createPurpBedBots(1057, 816);
+    console.log(this.furnitureGroup);
 
     //This is where we create our character on screen. We're calling in the OctoGuy component we've created, and assigning all of its accompanying methods to player.
     //The first arg is the scene ("this" makes sense), then the x coordinate, the y coordinate, and the last is the key that we've named this asset in the preload method.
@@ -214,7 +215,7 @@ export default class IntermissionRoom extends Phaser.Scene {
     });
   }
 
-  //These next few functions are creating our collidable furniture.
+  //These next few functions are creating our collidable furniture, and adding them to the furniture group, defined above.
   createWalls(x, y) {
     this.furnitureGroup.create(x, y, "wallCollider");
   }
