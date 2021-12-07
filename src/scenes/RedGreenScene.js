@@ -275,11 +275,13 @@ export default class RedGreenScene extends Phaser.Scene {
       this.octoGuy.update(this.cursors);
 
       //These two lines make it so that the player stops when they hit the edges of the canvas.
-      this.octoGuy.setCollideWorldBounds(true);
-      this.octoGuy.onWorldBounds = true;
+
+      // this.octoGuy.setCollideWorldBounds(true);
+      // this.octoGuy.onWorldBounds = true;
 
       //The collider line makes sure the player runs into the furniture objects, rather than going through.
-      this.physics.add.collider(this.octoGuy, this.furnitureGroup);
+
+      // this.physics.add.collider(this.octoGuy, this.furnitureGroup);
 
       // emit player movement
       var x = this.octoGuy.x;
