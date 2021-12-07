@@ -169,18 +169,35 @@ export default class IntermissionRoom extends Phaser.Scene {
         if (playerInfo.playerId === otherPlayer.playerId) {
           const oldX = otherPlayer.x;
           const oldY = otherPlayer.y;
-          const facing = otherPlayer.facing;
+          const facing = playerInfo.facing;
+          const lastFacing = playerInfo.facing.lastFacing;
           if (facing.up === true) {
-            otherPlayer.play('walkUp');
+            otherPlayer.play('walkUp', true);
           } else if (facing.down === true) {
-            otherPlayer.play('walkDown');
+            otherPlayer.play('walkDown', true);
           } else if (facing.left === true) {
-            otherPlayer.play('walkLeft');
+            otherPlayer.play('walkLeft', true);
           } else if (facing.right === true) {
-            otherPlayer.play('walkRight');
+            otherPlayer.play('walkRight', true);
           }
-          // otherPlayer.play('walkRight');
           otherPlayer.setPosition(playerInfo.x, playerInfo.y);
+          if (
+            facing.up === false &&
+            facing.down === false &&
+            facing.left === false &&
+            facing.right === false
+          ) {
+            console.log('!!!!!!', lastFacing);
+            if (lastFacing === 'up') {
+              otherPlayer.play('idleUp', true);
+            } else if (lastFacing === 'down') {
+              otherPlayer.play('idleDown', true);
+            } else if (lastFacing === 'left') {
+              otherPlayer.play('idleLeft', true);
+            } else if (lastFacing === 'right') {
+              otherPlayer.play('idleRight', true);
+            }
+          }
         }
       });
     });
@@ -200,6 +217,7 @@ export default class IntermissionRoom extends Phaser.Scene {
       // this.cameras.main.setBounds(100, 1000);
       this.cameras.main.startFollow(this.octoGuy, true, 0.08, 0.08);
       this.cameras.main.setZoom(1);
+      console.log('********', this.octoGuy.cursors);
     }, 3000);
   }
 
@@ -228,7 +246,7 @@ export default class IntermissionRoom extends Phaser.Scene {
         { key: 'octoGuy', frame: 1, duration: 50 },
       ],
       frameRate: 5,
-      repeat: 0,
+      repeat: -1,
     });
 
     this.anims.create({
@@ -240,7 +258,7 @@ export default class IntermissionRoom extends Phaser.Scene {
         { key: 'octoGuy', frame: 10, duration: 50 },
       ],
       frameRate: 5,
-      repeat: 0,
+      repeat: -1,
     });
 
     this.anims.create({
@@ -252,7 +270,7 @@ export default class IntermissionRoom extends Phaser.Scene {
         { key: 'octoGuy', frame: 4, duration: 50 },
       ],
       frameRate: 5,
-      repeat: 0,
+      repeat: -1,
     });
 
     this.anims.create({
@@ -264,7 +282,7 @@ export default class IntermissionRoom extends Phaser.Scene {
         { key: 'octoGuy', frame: 7, duration: 50 },
       ],
       frameRate: 5,
-      repeat: 0,
+      repeat: -1,
     });
 
     this.anims.create({

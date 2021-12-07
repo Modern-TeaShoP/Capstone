@@ -17,6 +17,7 @@ export default class OctoGuy extends Phaser.Physics.Arcade.Sprite {
       right: false,
       up: false,
       down: false,
+      lastFacing: '',
     };
   }
 
@@ -32,6 +33,7 @@ export default class OctoGuy extends Phaser.Physics.Arcade.Sprite {
       }
       this.setVelocityX(-150);
       this.facing.left = true;
+      this.facing.lastFacing = 'left';
     }
 
     //This moves right.
@@ -42,6 +44,7 @@ export default class OctoGuy extends Phaser.Physics.Arcade.Sprite {
       }
       this.setVelocityX(150);
       this.facing.right = true;
+      this.facing.lastFacing = 'right';
     }
     //This line stops movement when neither left nor right are being pressed.
     //In the if statement, we're checking whether right or left were pressed, and if so, we immediately interrupt the animation with another, which is just a single frame.
@@ -70,6 +73,7 @@ export default class OctoGuy extends Phaser.Physics.Arcade.Sprite {
       this.play('walkUp', true);
       this.setVelocityY(-150);
       this.facing.up = true;
+      this.facing.lastFacing = 'up';
     }
 
     // This moves down and activates the animation walkDown, which was declared in the scene.
@@ -81,6 +85,7 @@ export default class OctoGuy extends Phaser.Physics.Arcade.Sprite {
       this.play('walkDown', true);
       this.setVelocityY(150);
       this.facing.down = true;
+      this.facing.lastFacing = 'down';
     }
 
     //This line simply removes any velocity attached to the player when no up or down key is being pressed. We're also idling facing in the direction we traveled last.
