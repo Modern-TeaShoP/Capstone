@@ -187,7 +187,6 @@ export default class IntermissionRoom extends Phaser.Scene {
             facing.left === false &&
             facing.right === false
           ) {
-            console.log('!!!!!!', lastFacing);
             if (lastFacing === 'up') {
               otherPlayer.play('idleUp', true);
             } else if (lastFacing === 'down') {
@@ -217,7 +216,6 @@ export default class IntermissionRoom extends Phaser.Scene {
       // this.cameras.main.setBounds(100, 1000);
       this.cameras.main.startFollow(this.octoGuy, true, 0.08, 0.08);
       this.cameras.main.setZoom(1);
-      console.log('********', this.octoGuy.cursors);
     }, 3000);
   }
 
