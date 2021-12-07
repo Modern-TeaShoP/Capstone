@@ -127,7 +127,17 @@ export default class IntermissionRoom extends Phaser.Scene {
         if (playerInfo.playerId === otherPlayer.playerId) {
           const oldX = otherPlayer.x;
           const oldY = otherPlayer.y;
-          otherPlayer.play('walkRight');
+          const facing = otherPlayer.facing;
+          if (facing.up === true) {
+            otherPlayer.play('walkUp');
+          } else if (facing.down === true) {
+            otherPlayer.play('walkDown');
+          } else if (facing.left === true) {
+            otherPlayer.play('walkLeft');
+          } else if (facing.right === true) {
+            otherPlayer.play('walkRight');
+          }
+          // otherPlayer.play('walkRight');
           otherPlayer.setPosition(playerInfo.x, playerInfo.y);
         }
       });
@@ -256,6 +266,7 @@ export default class IntermissionRoom extends Phaser.Scene {
         this.socket.emit('playerMovement', {
           x: this.octoGuy.x,
           y: this.octoGuy.y,
+          facing: this.octoGuy.facing,
           roomKey: scene.state.roomKey,
         });
       }

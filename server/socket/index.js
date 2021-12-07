@@ -50,9 +50,10 @@ module.exports = (io) => {
 
     // when a player moves, update the player data
     socket.on('playerMovement', function (data) {
-      const { x, y, roomKey } = data;
+      const { x, y, roomKey, facing } = data;
       gameRooms[roomKey].players[socket.id].x = x;
       gameRooms[roomKey].players[socket.id].y = y;
+      gameRooms[roomKey].players[socket.id].facing = facing;
       // emit a message to all players about the player that moved
       socket
         .to(roomKey)
