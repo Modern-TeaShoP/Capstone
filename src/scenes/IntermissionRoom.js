@@ -9,6 +9,8 @@ export default class IntermissionRoom extends Phaser.Scene {
   }
   init(data) {
     this.socket = data.socket;
+    // this.userInfo = data.userInfo;
+    // console.log("inter", this.socket);
   }
 
   preload() {
@@ -50,6 +52,7 @@ export default class IntermissionRoom extends Phaser.Scene {
       'rightEdgeCollider',
       'assets/colliders/RightEdgeCollider.png'
     );
+    this.load.image('buttonCollider', 'assets/colliders/buttonCollider.png');
 
     //Now we'll preload our character as well. Notice the load command here isn't an image, but a spritesheet.
     //The first argument is the key word we'll use to create it later. The second is the path to the sheet.
@@ -108,7 +111,8 @@ export default class IntermissionRoom extends Phaser.Scene {
     this.furnitureGroup.children.each((gameObj) => {
       gameObj.setImmovable(true);
     });
-
+    this.sceneButton = new Furniture(this, 815, 93, 'buttonCollider');
+    this.sceneButton.setImmovable(true);
     //This is where we create our character on screen. We're calling in the OctoGuy component we've created, and assigning all of its accompanying methods to player.
     //The first arg is the scene ("this" makes sense), then the x coordinate, the y coordinate, and the last is the key that we've named this asset in the preload method.
     //The setScale method dynamically changes the size of the sprite being rendered on screen.
@@ -142,6 +146,12 @@ export default class IntermissionRoom extends Phaser.Scene {
       scene.state.roomKey = roomKey;
       scene.state.players = players;
       scene.state.numPlayers = numPlayers;
+      scene.add
+        .text(400, 20, `The room code is: ${roomKey}`)
+        .setColor('#60ceff')
+        .setFontSize(24)
+        .setFontStyle('bold')
+        .setShadow(0, 0, 'black', 5, false, true);
     });
 
     // PLAYERS
@@ -149,6 +159,7 @@ export default class IntermissionRoom extends Phaser.Scene {
       const { players, numPlayers } = arg;
       scene.state.numPlayers = numPlayers;
       Object.keys(players).forEach(function (id) {
+        console.log(players);
         if (players[id].playerId === scene.socket.id) {
           scene.addPlayer(scene, players[id]);
         } else {
@@ -217,15 +228,6 @@ export default class IntermissionRoom extends Phaser.Scene {
       this.cameras.main.startFollow(this.octoGuy, true, 0.08, 0.08);
       this.cameras.main.setZoom(1);
     }, 3000);
-
-    setTimeout(() => {
-      const interRoomState = this.state;
-      scene.scene.stop('IntermissionRoom');
-      scene.scene.start('RedGreenScene', {
-        socket: scene.socket,
-        interRoomState,
-      });
-    }, 5000);
   }
 
   //This helper function will create our animations for the OctoGuy character walking around on the screen.
@@ -361,6 +363,7 @@ export default class IntermissionRoom extends Phaser.Scene {
   //The update method handles changes to the various pieces of the scene.
   update(time, delta) {
     const scene = this;
+
     //Here, we're sending a call to the update function attached to this.player. In this case, it's OctoGuy's update function.
     //Note that we're passing our custom cursors through. The arguments of update will be everything OctoGuy's update function is looking for.
     if (this.octoGuy) {
@@ -372,6 +375,18 @@ export default class IntermissionRoom extends Phaser.Scene {
 
       //The collider line makes sure the player runs into the furniture objects, rather than going through.
       this.physics.add.collider(this.octoGuy, this.furnitureGroup);
+      this.physics.add.collider(this.octoGuy, this.sceneButton, function () {
+        // const theSocket = scene.socket;
+        const interRoomState = scene.state;
+        // setTimeout(() => {
+        //     theSocket.emit("joinRoom", scene.roomKey);
+        // }, 3000);
+        scene.scene.stop('IntermissionRoom');
+        scene.scene.launch('RedGreenScene', {
+          socket: scene.socket,
+          interRoomState,
+        });
+      });
 
       // emit player movement
       var x = this.octoGuy.x;
