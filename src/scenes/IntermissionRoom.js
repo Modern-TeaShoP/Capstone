@@ -1,10 +1,10 @@
-import 'phaser';
-import OctoGuy from '../entity/OctoGuy';
-import Furniture from '../entity/Furniture';
+import "phaser";
+import OctoGuy from "../entity/OctoGuy";
+import Furniture from "../entity/Furniture";
 
 export default class IntermissionRoom extends Phaser.Scene {
   constructor() {
-    super('IntermissionRoom');
+    super("IntermissionRoom");
     this.state = {};
   }
   init(data) {
@@ -16,47 +16,47 @@ export default class IntermissionRoom extends Phaser.Scene {
     //The first argument is simply whatever we'd like to call the tileset later, and the second argument is the path to the file.
     //It needs to be included somewhere in our project folder.
     this.load.tilemapTiledJSON(
-      'intermissionRoom',
-      'assets/backgrounds/intermissionRoom.json'
+      "intermissionRoom",
+      "assets/backgrounds/intermissionRoom.json"
     );
 
     //Then we load all of the image files that the tilemap uses (as in, what we used in Tiled to make the tilemap).
     //Again, the first argument is what we're going to call this image later, the second is the path to the image.
-    this.load.image('floors', 'assets/tilesets/Inside_A2.png');
-    this.load.image('walls', 'assets/tilesets/NewWalls.png');
-    this.load.image('furniture', 'assets/tilesets/Inside_Bv2.png');
-    this.load.image('tv', 'assets/tilesets/!TV_screens.png');
+    this.load.image("floors", "assets/tilesets/Inside_A2.png");
+    this.load.image("walls", "assets/tilesets/NewWalls.png");
+    this.load.image("furniture", "assets/tilesets/Inside_Bv2.png");
+    this.load.image("tv", "assets/tilesets/!TV_screens.png");
 
     //Just for ease of reading, I've separated the images I want to collide with from the tilesets. These follow the same parameter conventions as above.
     //I'm too dumb to figure out how to import collisions from Tiled, so we're gonna do this the old fashioned way.
-    this.load.image('wallCollider', 'assets/colliders/WallCollider.png');
-    this.load.image('tableCollider', 'assets/colliders/TableCollider.png');
-    this.load.image('toiletCollider', 'assets/colliders/ToiletCollider.png');
-    this.load.image('redBedCollider', 'assets/colliders/RedBedCollider.png');
-    this.load.image('purpBedCollider', 'assets/colliders/PurpBedCollider.png');
+    this.load.image("wallCollider", "assets/colliders/WallCollider.png");
+    this.load.image("tableCollider", "assets/colliders/TableCollider.png");
+    this.load.image("toiletCollider", "assets/colliders/ToiletCollider.png");
+    this.load.image("redBedCollider", "assets/colliders/RedBedCollider.png");
+    this.load.image("purpBedCollider", "assets/colliders/PurpBedCollider.png");
     this.load.image(
-      'redBedBotCollider',
-      'assets/colliders/RedBedBotCollider.png'
+      "redBedBotCollider",
+      "assets/colliders/RedBedBotCollider.png"
     );
     this.load.image(
-      'purpBedBotCollider',
-      'assets/colliders/PurpBedBotCollider.png'
+      "purpBedBotCollider",
+      "assets/colliders/PurpBedBotCollider.png"
     );
     this.load.image(
-      'bottomEdgeCollider',
-      'assets/colliders/BottomEdgeCollider.png'
+      "bottomEdgeCollider",
+      "assets/colliders/BottomEdgeCollider.png"
     );
     this.load.image(
-      'rightEdgeCollider',
-      'assets/colliders/RightEdgeCollider.png'
+      "rightEdgeCollider",
+      "assets/colliders/RightEdgeCollider.png"
     );
 
     //Now we'll preload our character as well. Notice the load command here isn't an image, but a spritesheet.
     //The first argument is the key word we'll use to create it later. The second is the path to the sheet.
     //IMPORTANTLY, the third argument is the dimensions of each sprite on your spritesheet!
     this.load.spritesheet(
-      'octoGuy',
-      'assets/spriteSheets/octoSpriteSheet.png',
+      "octoGuy",
+      "assets/spriteSheets/octoSpriteSheet.png",
       {
         frameWidth: 18,
         frameHeight: 27,
@@ -68,20 +68,20 @@ export default class IntermissionRoom extends Phaser.Scene {
     const scene = this;
     // this.socket = io();
     //In the create method, we need to make the tilemap, where the key's value is the first argument that we passed when loading the tileset.
-    const map = this.make.tilemap({ key: 'intermissionRoom' });
+    const map = this.make.tilemap({ key: "intermissionRoom" });
 
     //Then we add TilesetImages to our map that we just made. The variable name of these is what we'll call later.
-    const floorTiles = map.addTilesetImage('Inside_A2', 'floors');
-    const wallTiles = map.addTilesetImage('NewWalls', 'walls');
-    const furnitureTiles = map.addTilesetImage('Inside_Bv2', 'furniture');
-    const tvTiles = map.addTilesetImage('!TV_screens', 'tv');
+    const floorTiles = map.addTilesetImage("Inside_A2", "floors");
+    const wallTiles = map.addTilesetImage("NewWalls", "walls");
+    const furnitureTiles = map.addTilesetImage("Inside_Bv2", "furniture");
+    const tvTiles = map.addTilesetImage("!TV_screens", "tv");
 
     //Now we recreate the layers from Tiled. Fairly sure order matters here, so most likely will want to put the lowest layer higher up.
     //The first argument is the NAME OF THE LAYER IN TILED. The second arg is the variable name of the tileset image from above.
-    const floor = map.createLayer('floor', floorTiles, 0, 0);
-    const walls = map.createLayer('walls', wallTiles, 0, 0);
-    const furniture = map.createLayer('furniture', furnitureTiles, 0, 0);
-    const tv = map.createLayer('tv', tvTiles, 0, 0);
+    const floor = map.createLayer("floor", floorTiles, 0, 0);
+    const walls = map.createLayer("walls", wallTiles, 0, 0);
+    const furniture = map.createLayer("furniture", furnitureTiles, 0, 0);
+    const tv = map.createLayer("tv", tvTiles, 0, 0);
 
     //Using this line, we create a group that will encompass all the furniture, or otherwise all the collidable, non-interactive object in the game world.
     //Then we'll use the helper function to make our furniture. We'll make a new function for each type of furniture.
@@ -133,8 +133,8 @@ export default class IntermissionRoom extends Phaser.Scene {
     this.otherPlayers = this.physics.add.group();
 
     // JOINED ROOM - SET STATE
-    this.socket.on('setState', function (state) {
-      console.log('in setState socket.on');
+    this.socket.on("setState", function (state) {
+      console.log("in setState socket.on");
       const { roomKey, players, numPlayers } = state;
       scene.physics.resume();
 
@@ -142,10 +142,16 @@ export default class IntermissionRoom extends Phaser.Scene {
       scene.state.roomKey = roomKey;
       scene.state.players = players;
       scene.state.numPlayers = numPlayers;
+      scene.add
+        .text(400, 20, `The room code is: ${roomKey}`)
+        .setColor("#60ceff")
+        .setFontSize(24)
+        .setFontStyle("bold")
+        .setShadow(0, 0, "black", 5, false, true);
     });
 
     // PLAYERS
-    this.socket.on('currentPlayers', function (arg) {
+    this.socket.on("currentPlayers", function (arg) {
       const { players, numPlayers } = arg;
       scene.state.numPlayers = numPlayers;
       Object.keys(players).forEach(function (id) {
@@ -157,14 +163,14 @@ export default class IntermissionRoom extends Phaser.Scene {
       });
     });
 
-    this.socket.on('newPlayer', function (arg) {
+    this.socket.on("newPlayer", function (arg) {
       const { playerInfo, numPlayers } = arg;
       scene.addOtherPlayers(scene, playerInfo);
       scene.state.numPlayers = numPlayers;
-      console.log('number of players', scene.state.numPlayers);
+      console.log("number of players", scene.state.numPlayers);
     });
 
-    this.socket.on('playerMoved', function (playerInfo) {
+    this.socket.on("playerMoved", function (playerInfo) {
       scene.otherPlayers.getChildren().forEach(function (otherPlayer) {
         if (playerInfo.playerId === otherPlayer.playerId) {
           const oldX = otherPlayer.x;
@@ -172,13 +178,13 @@ export default class IntermissionRoom extends Phaser.Scene {
           const facing = playerInfo.facing;
           const lastFacing = playerInfo.facing.lastFacing;
           if (facing.up === true) {
-            otherPlayer.play('walkUp', true);
+            otherPlayer.play("walkUp", true);
           } else if (facing.down === true) {
-            otherPlayer.play('walkDown', true);
+            otherPlayer.play("walkDown", true);
           } else if (facing.left === true) {
-            otherPlayer.play('walkLeft', true);
+            otherPlayer.play("walkLeft", true);
           } else if (facing.right === true) {
-            otherPlayer.play('walkRight', true);
+            otherPlayer.play("walkRight", true);
           }
           otherPlayer.setPosition(playerInfo.x, playerInfo.y);
           if (
@@ -187,14 +193,14 @@ export default class IntermissionRoom extends Phaser.Scene {
             facing.left === false &&
             facing.right === false
           ) {
-            if (lastFacing === 'up') {
-              otherPlayer.play('idleUp', true);
-            } else if (lastFacing === 'down') {
-              otherPlayer.play('idleDown', true);
-            } else if (lastFacing === 'left') {
-              otherPlayer.play('idleLeft', true);
-            } else if (lastFacing === 'right') {
-              otherPlayer.play('idleRight', true);
+            if (lastFacing === "up") {
+              otherPlayer.play("idleUp", true);
+            } else if (lastFacing === "down") {
+              otherPlayer.play("idleDown", true);
+            } else if (lastFacing === "left") {
+              otherPlayer.play("idleLeft", true);
+            } else if (lastFacing === "right") {
+              otherPlayer.play("idleRight", true);
             }
           }
         }
@@ -202,7 +208,7 @@ export default class IntermissionRoom extends Phaser.Scene {
     });
 
     //Disconnect
-    this.socket.on('disconnected', function (arg) {
+    this.socket.on("disconnected", function (arg) {
       const { playerId, numPlayers } = arg;
       scene.state.numPlayers = numPlayers;
       scene.otherPlayers.getChildren().forEach(function (otherPlayer) {
@@ -228,7 +234,7 @@ export default class IntermissionRoom extends Phaser.Scene {
     //First, we use this line to generate frame numbers for the spritesheet called octoGuy.
     //There's no "output" of this function, but it makes the individual sprites on the sheet accessible through indices, like an array.
     //The frames are each the size we decided when loading octoGuy in the preload method, so make sure each sprite on the sheet is the same size.
-    this.anims.generateFrameNumbers('octoGuy');
+    this.anims.generateFrameNumbers("octoGuy");
 
     //The "key" key is what we'll use on the entity to utilize this animation.
     //The "frames" key is where we'll pick exactly which frames we want from the spritesheet, and put them in the order we want for the animation.
@@ -236,77 +242,77 @@ export default class IntermissionRoom extends Phaser.Scene {
     //FrameRate is the speed which you cycle through the frames in your animation. Higher frameRate is a faster cycle.
     //Repeat tells how many times the anmation will repeat *after running when it's called*. A value of -1 results in an infinite animation loop as long as the animation is present.
     this.anims.create({
-      key: 'walkDown',
+      key: "walkDown",
       frames: [
-        { key: 'octoGuy', frame: 0 },
-        { key: 'octoGuy', frame: 1 },
-        { key: 'octoGuy', frame: 2 },
-        { key: 'octoGuy', frame: 1, duration: 50 },
+        { key: "octoGuy", frame: 0 },
+        { key: "octoGuy", frame: 1 },
+        { key: "octoGuy", frame: 2 },
+        { key: "octoGuy", frame: 1, duration: 50 },
       ],
       frameRate: 5,
       repeat: -1,
     });
 
     this.anims.create({
-      key: 'walkUp',
+      key: "walkUp",
       frames: [
-        { key: 'octoGuy', frame: 9 },
-        { key: 'octoGuy', frame: 10 },
-        { key: 'octoGuy', frame: 11 },
-        { key: 'octoGuy', frame: 10, duration: 50 },
+        { key: "octoGuy", frame: 9 },
+        { key: "octoGuy", frame: 10 },
+        { key: "octoGuy", frame: 11 },
+        { key: "octoGuy", frame: 10, duration: 50 },
       ],
       frameRate: 5,
       repeat: -1,
     });
 
     this.anims.create({
-      key: 'walkLeft',
+      key: "walkLeft",
       frames: [
-        { key: 'octoGuy', frame: 3 },
-        { key: 'octoGuy', frame: 4 },
-        { key: 'octoGuy', frame: 5 },
-        { key: 'octoGuy', frame: 4, duration: 50 },
+        { key: "octoGuy", frame: 3 },
+        { key: "octoGuy", frame: 4 },
+        { key: "octoGuy", frame: 5 },
+        { key: "octoGuy", frame: 4, duration: 50 },
       ],
       frameRate: 5,
       repeat: -1,
     });
 
     this.anims.create({
-      key: 'walkRight',
+      key: "walkRight",
       frames: [
-        { key: 'octoGuy', frame: 6 },
-        { key: 'octoGuy', frame: 7 },
-        { key: 'octoGuy', frame: 8 },
-        { key: 'octoGuy', frame: 7, duration: 50 },
+        { key: "octoGuy", frame: 6 },
+        { key: "octoGuy", frame: 7 },
+        { key: "octoGuy", frame: 8 },
+        { key: "octoGuy", frame: 7, duration: 50 },
       ],
       frameRate: 5,
       repeat: -1,
     });
 
     this.anims.create({
-      key: 'idleDown',
-      frames: [{ key: 'octoGuy', frame: 1, duration: 50 }],
+      key: "idleDown",
+      frames: [{ key: "octoGuy", frame: 1, duration: 50 }],
       framerate: 10,
       repeat: 0,
     });
 
     this.anims.create({
-      key: 'idleUp',
-      frames: [{ key: 'octoGuy', frame: 10, duration: 50 }],
+      key: "idleUp",
+      frames: [{ key: "octoGuy", frame: 10, duration: 50 }],
       framerate: 10,
       repeat: 0,
     });
 
     this.anims.create({
-      key: 'idleLeft',
-      frames: [{ key: 'octoGuy', frame: 4, duration: 50 }],
+      key: "idleLeft",
+      frames: [{ key: "octoGuy", frame: 4, duration: 50 }],
       framerate: 10,
       repeat: 0,
     });
 
     this.anims.create({
-      key: 'idleRight',
-      frames: [{ key: 'octoGuy', frame: 8, duration: 50 }],
+      key: "idleRight",
+      frames: [{ key: "octoGuy", frame: 8, duration: 50 }],
       framerate: 10,
       repeat: 0,
     });
@@ -314,39 +320,39 @@ export default class IntermissionRoom extends Phaser.Scene {
 
   //These next few functions are creating our collidable furniture, and adding them to the furniture group, defined above.
   createWalls(x, y) {
-    this.furnitureGroup.create(x, y, 'wallCollider');
+    this.furnitureGroup.create(x, y, "wallCollider");
   }
 
   createTables(x, y) {
-    this.furnitureGroup.create(x, y, 'tableCollider');
+    this.furnitureGroup.create(x, y, "tableCollider");
   }
 
   createToilets(x, y) {
-    this.furnitureGroup.create(x, y, 'toiletCollider');
+    this.furnitureGroup.create(x, y, "toiletCollider");
   }
 
   createRedBeds(x, y) {
-    this.furnitureGroup.create(x, y, 'redBedCollider');
+    this.furnitureGroup.create(x, y, "redBedCollider");
   }
 
   createRedBedBots(x, y) {
-    this.furnitureGroup.create(x, y, 'redBedBotCollider');
+    this.furnitureGroup.create(x, y, "redBedBotCollider");
   }
 
   createPurpBeds(x, y) {
-    this.furnitureGroup.create(x, y, 'purpBedCollider');
+    this.furnitureGroup.create(x, y, "purpBedCollider");
   }
 
   createPurpBedBots(x, y) {
-    this.furnitureGroup.create(x, y, 'purpBedBotCollider');
+    this.furnitureGroup.create(x, y, "purpBedBotCollider");
   }
 
   createBottomEdge(x, y) {
-    this.furnitureGroup.create(x, y, 'bottomEdgeCollider');
+    this.furnitureGroup.create(x, y, "bottomEdgeCollider");
   }
 
   createRightEdge(x, y) {
-    this.furnitureGroup.create(x, y, 'rightEdgeCollider');
+    this.furnitureGroup.create(x, y, "rightEdgeCollider");
   }
 
   //The update method handles changes to the various pieces of the scene.
@@ -372,7 +378,7 @@ export default class IntermissionRoom extends Phaser.Scene {
         (x !== this.octoGuy.oldPosition.x || y !== this.octoGuy.oldPosition.y)
       ) {
         this.moving = true;
-        this.socket.emit('playerMovement', {
+        this.socket.emit("playerMovement", {
           x: this.octoGuy.x,
           y: this.octoGuy.y,
           facing: this.octoGuy.facing,
@@ -389,14 +395,14 @@ export default class IntermissionRoom extends Phaser.Scene {
   }
 
   addPlayer(scene, playerInfo) {
-    console.log('IN ADD PLAYER FUNCTION');
+    console.log("IN ADD PLAYER FUNCTION");
     scene.joined = true;
-    scene.octoGuy = new OctoGuy(scene, 300, 200, 'octoGuy').setScale(2.3);
+    scene.octoGuy = new OctoGuy(scene, 300, 200, "octoGuy").setScale(2.3);
   }
 
   addOtherPlayers(scene, playerInfo) {
-    console.log('IN ADD OTHER PLAYERS FUNCTION');
-    const otherPlayer = new OctoGuy(scene, 340, 240, 'octoGuy').setScale(2.3);
+    console.log("IN ADD OTHER PLAYERS FUNCTION");
+    const otherPlayer = new OctoGuy(scene, 340, 240, "octoGuy").setScale(2.3);
     otherPlayer.playerId = playerInfo.playerId;
     scene.otherPlayers.add(otherPlayer);
   }

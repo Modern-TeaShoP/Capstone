@@ -1,8 +1,8 @@
-import Phaser from 'phaser';
+import Phaser from "phaser";
 
 export default class WaitingRoom extends Phaser.Scene {
   constructor() {
-    super('WaitingRoom');
+    super("WaitingRoom");
     this.state = {};
     this.hasBeenSet = false;
   }
@@ -12,7 +12,7 @@ export default class WaitingRoom extends Phaser.Scene {
   }
 
   preload() {
-    this.load.html('codeform', 'assets/text/codeform.html');
+    this.load.html("codeform", "assets/text/codeform.html");
   }
 
   create() {
@@ -30,69 +30,71 @@ export default class WaitingRoom extends Phaser.Scene {
     scene.boxes.fillStyle(0xa9a9a9, 1);
 
     // popup window
-    scene.popUp.strokeRect(25, 25, 750, 500);
-    scene.popUp.fillRect(25, 25, 750, 500);
+    const screenCenterX = this.cameras.main.width / 4;
+    const screenCenterY = this.cameras.main.height / 4;
+    scene.popUp.strokeRect(screenCenterX, screenCenterY, 750, 500);
+    scene.popUp.fillRect(screenCenterX, screenCenterY, 750, 500);
 
     //title
-    scene.title = scene.add.text(100, 75, 'Octo Game', {
-      fill: '#add8e6',
-      fontSize: '66px',
-      fontStyle: 'bold',
+    scene.title = scene.add.text(screenCenterX, screenCenterY, "Octo Game", {
+      fill: "#add8e6",
+      fontSize: "66px",
+      fontStyle: "bold",
     });
 
     //left popup
     scene.boxes.strokeRect(100, 200, 275, 100);
     scene.boxes.fillRect(100, 200, 275, 100);
-    scene.requestButton = scene.add.text(140, 215, 'Request Room Key', {
-      fill: '#000000',
-      fontSize: '20px',
-      fontStyle: 'bold',
+    scene.requestButton = scene.add.text(140, 215, "Request Room Key", {
+      fill: "#000000",
+      fontSize: "20px",
+      fontStyle: "bold",
     });
 
     //right popup
     scene.boxes.strokeRect(425, 200, 275, 100);
     scene.boxes.fillRect(425, 200, 275, 100);
-    scene.inputElement = scene.add.dom(562.5, 250).createFromCache('codeform');
-    scene.inputElement.addListener('click');
-    scene.inputElement.on('click', function (event) {
-      if (event.target.name === 'enterRoom') {
-        const input = scene.inputElement.getChildByName('code-form');
+    scene.inputElement = scene.add.dom(562.5, 250).createFromCache("codeform");
+    scene.inputElement.addListener("click");
+    scene.inputElement.on("click", function (event) {
+      if (event.target.name === "enterRoom") {
+        const input = scene.inputElement.getChildByName("code-form");
 
-        scene.socket.emit('isKeyValid', input.value);
+        scene.socket.emit("isKeyValid", input.value);
       }
     });
 
     scene.requestButton.setInteractive();
-    scene.requestButton.on('pointerdown', () => {
-      scene.socket.emit('getRoomCode');
+    scene.requestButton.on("pointerdown", () => {
+      scene.socket.emit("getRoomCode");
     });
 
-    scene.notValidText = scene.add.text(670, 295, '', {
-      fill: '#ff0000',
-      fontSize: '15px',
+    scene.notValidText = scene.add.text(670, 295, "", {
+      fill: "#ff0000",
+      fontSize: "15px",
     });
 
-    scene.roomKeyText = scene.add.text(210, 250, '', {
-      fill: '#00ff00',
-      fontSize: '20px',
-      fontStyle: 'bold',
+    scene.roomKeyText = scene.add.text(210, 250, "", {
+      fill: "#00ff00",
+      fontSize: "20px",
+      fontStyle: "bold",
     });
 
-    scene.socket.on('roomCreated', function (roomKey) {
+    scene.socket.on("roomCreated", function (roomKey) {
       scene.roomKey = roomKey;
       scene.roomKeyText.setText(scene.roomKey);
     });
 
-    scene.socket.on('keyNotValid', function () {
-      scene.notValidText.setText('Invalid Room Key');
+    scene.socket.on("keyNotValid", function () {
+      scene.notValidText.setText("Invalid Room Key");
     });
-    scene.socket.on('keyIsValid', function (input) {
+    scene.socket.on("keyIsValid", function (input) {
       const theSocket = scene.socket;
       setTimeout(() => {
-        theSocket.emit('joinRoom', input);
+        theSocket.emit("joinRoom", input);
       }, 2000);
-      scene.scene.stop('WaitingRoom');
-      scene.scene.start('RedGreenScene', { socket: scene.socket });
+      scene.scene.stop("WaitingRoom");
+      scene.scene.start("IntermissionRoom", { socket: scene.socket });
     });
   }
   update() {}
