@@ -11,6 +11,11 @@ export default class OctoGuy extends Phaser.Physics.Arcade.Sprite {
     this.scene.physics.world.enable(this);
     this.socket = socket;
 
+    //Frozen state after player is eliminated
+    this.frozen = false;
+
+    this.inMotion = false;
+
     //The facing object here is used to keep track of which direction the character is facing so that we can play the correct idle animation when movement stops.
     this.facing = {
       left: false,
@@ -27,79 +32,87 @@ export default class OctoGuy extends Phaser.Physics.Arcade.Sprite {
     //Note that negative numbers don't represent a slower speed. Speeds start at 0 and increase in both directions. Negative numbers change direction of movement.
     //The second argument for the animation, true, needs to be true in order for the animation to fire while the button is pressed.
     //If it's left out, or turned to false, it will run when the key is released, rather than when it's pressed.
-    if (cursors.left.isDown) {
-      if (!cursors.up.isDown && !cursors.down.isDown) {
-        this.play('walkLeft', true);
-      }
-      this.setVelocityX(-150);
-      this.facing.left = true;
-      this.facing.lastFacing = 'left';
-    }
-
-    //This moves right.
-    //Notice we're setting the right facing to true. It comes in handy once we stop moving.
-    else if (cursors.right.isDown) {
-      if (!cursors.up.isDown && !cursors.down.isDown) {
-        this.play('walkRight', true);
-      }
-      this.setVelocityX(150);
-      this.facing.right = true;
-      this.facing.lastFacing = 'right';
-    }
-    //This line stops movement when neither left nor right are being pressed.
-    //In the if statement, we're checking whether right or left were pressed, and if so, we immediately interrupt the animation with another, which is just a single frame.
-    //Without this, the animation wants to "finish" running through all the unfinished frames when we let off the key.
-    //Now, no matter where in the animation we are, we stop dead. We also set left and right facing back to false so we don't ALWAYS face that way.
-    else {
-      this.setVelocityX(0);
-
-      if (this.facing.left === true) {
-        this.play('idleLeft');
-      } else if (this.facing.right === true) {
-        this.play('idleRight');
+    if (this.frozen === false) {
+      if (cursors.left.isDown) {
+        if (!cursors.up.isDown && !cursors.down.isDown) {
+          this.play('walkLeft', true);
+        }
+        this.setVelocityX(-150);
+        this.facing.left = true;
+        this.facing.lastFacing = 'left';
+        this.inMotion = true;
       }
 
-      this.facing.left = false;
-      this.facing.right = false;
-    }
+      //This moves right.
+      //Notice we're setting the right facing to true. It comes in handy once we stop moving.
+      else if (cursors.right.isDown) {
+        if (!cursors.up.isDown && !cursors.down.isDown) {
+          this.play('walkRight', true);
+        }
+        this.setVelocityX(150);
+        this.facing.right = true;
+        this.facing.lastFacing = 'right';
+        this.inMotion = true;
+      }
+      //This line stops movement when neither left nor right are being pressed.
+      //In the if statement, we're checking whether right or left were pressed, and if so, we immediately interrupt the animation with another, which is just a single frame.
+      //Without this, the animation wants to "finish" running through all the unfinished frames when we let off the key.
+      //Now, no matter where in the animation we are, we stop dead. We also set left and right facing back to false so we don't ALWAYS face that way.
+      else {
+        this.setVelocityX(0);
 
-    // This moves up.
-    //It's a little counterintuitive that negative y values move the sprite up on the screen, so be aware of that.
-    if (
-      cursors.up.isDown ||
-      (cursors.up.isDown && cursors.left.isDown) ||
-      (cursors.up.isDown && cursors.right.isDown)
-    ) {
-      this.play('walkUp', true);
-      this.setVelocityY(-150);
-      this.facing.up = true;
-      this.facing.lastFacing = 'up';
-    }
+        if (this.facing.left === true) {
+          this.play('idleLeft');
+        } else if (this.facing.right === true) {
+          this.play('idleRight');
+        }
 
-    // This moves down and activates the animation walkDown, which was declared in the scene.
-    else if (
-      cursors.down.isDown ||
-      (cursors.down.isDown && cursors.left.isDown) ||
-      (cursors.down.isDown && cursors.right.isDown)
-    ) {
-      this.play('walkDown', true);
-      this.setVelocityY(150);
-      this.facing.down = true;
-      this.facing.lastFacing = 'down';
-    }
-
-    //This line simply removes any velocity attached to the player when no up or down key is being pressed. We're also idling facing in the direction we traveled last.
-    else {
-      this.setVelocityY(0);
-
-      if (this.facing.up === true) {
-        this.play('idleUp');
-      } else if (this.facing.down === true) {
-        this.play('idleDown');
+        this.facing.left = false;
+        this.facing.right = false;
+        this.inMotion = false;
       }
 
-      this.facing.up = false;
-      this.facing.down = false;
+      // This moves up.
+      //It's a little counterintuitive that negative y values move the sprite up on the screen, so be aware of that.
+      if (
+        cursors.up.isDown ||
+        (cursors.up.isDown && cursors.left.isDown) ||
+        (cursors.up.isDown && cursors.right.isDown)
+      ) {
+        this.play('walkUp', true);
+        this.setVelocityY(-150);
+        this.facing.up = true;
+        this.facing.lastFacing = 'up';
+        this.inMotion = true;
+      }
+
+      // This moves down and activates the animation walkDown, which was declared in the scene.
+      else if (
+        cursors.down.isDown ||
+        (cursors.down.isDown && cursors.left.isDown) ||
+        (cursors.down.isDown && cursors.right.isDown)
+      ) {
+        this.play('walkDown', true);
+        this.setVelocityY(150);
+        this.facing.down = true;
+        this.facing.lastFacing = 'down';
+        this.inMotion = true;
+      }
+
+      //This line simply removes any velocity attached to the player when no up or down key is being pressed. We're also idling facing in the direction we traveled last.
+      else {
+        this.setVelocityY(0);
+
+        if (this.facing.up === true) {
+          this.play('idleUp');
+        } else if (this.facing.down === true) {
+          this.play('idleDown');
+        }
+
+        this.facing.up = false;
+        this.facing.down = false;
+        this.inMotion = false;
+      }
     }
   }
 
@@ -107,6 +120,10 @@ export default class OctoGuy extends Phaser.Physics.Arcade.Sprite {
   //Not only does update check for changes, but it can also carry out a function (or several) in response to that change.
   //This particular function checks which controller button is being pushed and executes a movement & animation in response.
   update(cursors) {
-    this.updateMovement(cursors);
+    if (this.frozen === false) {
+      this.updateMovement(cursors);
+    } else {
+      this.play('idleDown');
+    }
   }
 }
