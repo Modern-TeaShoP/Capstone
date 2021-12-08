@@ -4,14 +4,21 @@ import OctoGuy from "../entity/OctoGuy";
 export default class RedGreenScene extends Phaser.Scene {
     constructor() {
         super("RedGreenScene");
+        this.state = {};
+        // gameStarted: false,
+        // redLight: false,
+        // gameWon: false,
+    }
+    init(data) {
+        this.socket = data.socket;
+        this.interRoomState = data.interRoomState;
         this.state = {
+            ...this.interRoomState,
             gameStarted: false,
             redLight: false,
             gameWon: false,
         };
-    }
-    init(data) {
-        this.socket = data.socket;
+        // console.log("rlgl", this.socket);
     }
 
     startRedLight() {
@@ -41,8 +48,8 @@ export default class RedGreenScene extends Phaser.Scene {
 
         //Then we load all of the image files that the tilemap uses (as in, what we used in Tiled to make the tilemap).
         //Again, the first argument is what we're going to call this image later, the second is the path to the image.
-        this.load.image("floors", "assets/tilesets/Outside_A2_Bright.png");
-        this.load.image("walls", "assets/tilesets/Outside_C.png");
+        this.load.image("floors2", "assets/tilesets/Outside_A2_Bright.png");
+        this.load.image("walls2", "assets/tilesets/Outside_C.png");
         this.load.image("goal", "assets/tilesets/Outside_C.png");
         this.load.image("police", "assets/tilesets/!Policedrone.png");
 
@@ -64,13 +71,14 @@ export default class RedGreenScene extends Phaser.Scene {
 
     create() {
         const scene = this;
+
         // this.socket = io();
         //In the create method, we need to make the tilemap, where the key's value is the first argument that we passed when loading the tileset.
         const map = this.make.tilemap({ key: "redGreenScene" });
 
         //Then we add TilesetImages to our map that we just made. The variable name of these is what we'll call later.
-        const floorTiles = map.addTilesetImage("Outside_A2_Bright", "floors");
-        const wallTiles = map.addTilesetImage("Outside_C", "walls");
+        const floorTiles = map.addTilesetImage("Outside_A2_Bright", "floors2");
+        const wallTiles = map.addTilesetImage("Outside_C", "walls2");
         const droneTiles = map.addTilesetImage("!Policedrone", "police");
         const goalTiles = map.addTilesetImage("Outside_C", "goal");
 
@@ -103,29 +111,35 @@ export default class RedGreenScene extends Phaser.Scene {
         this.otherPlayers = this.physics.add.group();
 
         // JOINED ROOM - SET STATE
-        this.socket.on("setState", function (state) {
-            const { roomKey, players, numPlayers } = state;
-            console.log("should create player", state.players);
-            scene.physics.resume();
+        // this.socket.on("setState", function (state) {
+        //     console.log("should create player", state.players);
+        //     const { roomKey, players, numPlayers } = state;
+        //     scene.physics.resume();
 
-            // STATE
-            scene.state.roomKey = roomKey;
-            scene.state.players = players;
-            scene.state.numPlayers = numPlayers;
-        });
+        //     // STATE
+        //     scene.state.roomKey = roomKey;
+        //     scene.state.players = players;
+        //     scene.state.numPlayers = numPlayers;
+        // });
+
+        // this.socket.emit("currentPlayers", function (players) {
+        //     scene.addPlayer(scene);
+        // });
+
+        // scene.addPlayer(scene);
 
         // PLAYERS
-        this.socket.on("currentPlayers", function (arg) {
-            const { players, numPlayers } = arg;
-            scene.state.numPlayers = numPlayers;
-            Object.keys(players).forEach(function (id) {
-                if (players[id].playerId === scene.socket.id) {
-                    scene.addPlayer(scene, players[id]);
-                } else {
-                    scene.addOtherPlayers(scene, players[id]);
-                }
-            });
-        });
+        // this.socket.on("currentPlayers", function (arg) {
+        //     const { players, numPlayers } = arg;
+        //     scene.state.numPlayers = numPlayers;
+        //     Object.keys(players).forEach(function (id) {
+        //         if (players[id].playerId === scene.socket.id) {
+        //             scene.addPlayer(scene, players[id]);
+        //         } else {
+        //             scene.addOtherPlayers(scene, players[id]);
+        //         }
+        //     });
+        // });
 
         this.socket.on("newPlayer", function (arg) {
             const { playerInfo, numPlayers } = arg;
@@ -185,11 +199,29 @@ export default class RedGreenScene extends Phaser.Scene {
             console.log(`The game was won by player ${data.id}`);
         });
 
+        // check playerInfo passed in, and generate sprites to otherplayers if playerInfo.id in
+        setTimeout(() => {
+            console.log(
+                "STATE FROM SETTIMEOUT",
+                scene.state,
+                "SCENE.STATE PLAYERS *******",
+                scene.state.players
+            );
+            Object.keys(scene.state.players).forEach(function (id) {
+                if (scene.state.players[id].playerId === scene.socket.id) {
+                    scene.addPlayer(scene, scene.state.players[id]);
+                } else {
+                    scene.addOtherPlayers(scene, scene.state.players[id]);
+                }
+            });
+        }, 2000);
         setTimeout(() => {
             // this.cameras.main.setBounds(100, 1000);
+            console.log("state", this.state);
             this.cameras.main.startFollow(this.octoGuy, true, 0.08, 0.08);
             this.cameras.main.setZoom(1);
-        }, 5000);
+        }, 4000);
+        // this.socket.emit("launchScene", scene.state.roomKey);
     }
 
     //This helper function will create our animations for the OctoGuy character walking around on the screen.
@@ -327,6 +359,10 @@ export default class RedGreenScene extends Phaser.Scene {
             if (y <= 288) {
                 if (scene.state.gameWon === false) {
                     scene.state.gameWon = true;
+                    scene.scene.stop("RedGreenScene");
+                    scene.scene.start("IntermissionRoom", {
+                        socket: scene.socket,
+                    });
                     this.socket.emit("gameWon", {
                         id: scene.socket.id,
                         roomKey: scene.state.roomKey,
@@ -356,10 +392,11 @@ export default class RedGreenScene extends Phaser.Scene {
         }
     }
 
-    addPlayer(scene, playerInfo) {
-        scene.joined = true;
-        scene.octoGuy = new OctoGuy(scene, 500, 3700, "octoGuy").setScale(2.3);
-        this.startRedLight();
+    addPlayer(scene) {
+        console.log("IN ADD OTHER PLAYERS FUNCTION");
+        // this.joined = true;
+        this.octoGuy = new OctoGuy(scene, 500, 3700, "octoGuy").setScale(2.3);
+        this.startGreenLight();
     }
 
     addOtherPlayers(scene, playerInfo) {
