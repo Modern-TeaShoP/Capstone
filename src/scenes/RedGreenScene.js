@@ -7,6 +7,7 @@ export default class RedGreenScene extends Phaser.Scene {
     this.state = {
       gameStarted: false,
       redLight: false,
+      gameWon: false,
     };
   }
   init(data) {
@@ -103,7 +104,6 @@ export default class RedGreenScene extends Phaser.Scene {
 
     // JOINED ROOM - SET STATE
     this.socket.on('setState', function (state) {
-      console.log('in setState socket.on');
       const { roomKey, players, numPlayers } = state;
       scene.physics.resume();
 
@@ -130,7 +130,6 @@ export default class RedGreenScene extends Phaser.Scene {
       const { playerInfo, numPlayers } = arg;
       scene.addOtherPlayers(scene, playerInfo);
       scene.state.numPlayers = numPlayers;
-      console.log('number of players', scene.state.numPlayers);
     });
 
     this.socket.on('playerMoved', function (playerInfo) {
@@ -179,6 +178,10 @@ export default class RedGreenScene extends Phaser.Scene {
           otherPlayer.destroy();
         }
       });
+    });
+
+    this.socket.on('gameOver', function (data) {
+      console.log(`The game was won by player ${data.id}`);
     });
 
     setTimeout(() => {
@@ -316,6 +319,17 @@ export default class RedGreenScene extends Phaser.Scene {
       // emit player movement
       var x = this.octoGuy.x;
       var y = this.octoGuy.y;
+
+      if (y <= 288) {
+        if (scene.state.gameWon === false) {
+          scene.state.gameWon = true;
+          this.socket.emit('gameWon', {
+            id: scene.socket.id,
+            roomKey: scene.state.roomKey,
+          });
+        }
+      }
+
       if (
         this.octoGuy.oldPosition &&
         (x !== this.octoGuy.oldPosition.x || y !== this.octoGuy.oldPosition.y)
