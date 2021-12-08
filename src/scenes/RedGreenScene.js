@@ -4,14 +4,18 @@ import OctoGuy from '../entity/OctoGuy';
 export default class RedGreenScene extends Phaser.Scene {
   constructor() {
     super('RedGreenScene');
+    this.state = {};
+  }
+  init(data) {
+    this.socket = data.socket;
+    this.interRoomState = data.interRoomState;
     this.state = {
+      ...this.interRoomState,
       gameStarted: false,
       redLight: false,
       gameWon: false,
     };
-  }
-  init(data) {
-    this.socket = data.socket;
+    console.log('******', this.state);
   }
 
   startRedLight() {
@@ -184,11 +188,30 @@ export default class RedGreenScene extends Phaser.Scene {
       console.log(`The game was won by player ${data.id}`);
     });
 
+    // add your own octoguy
+
+    // check playerInfo passed in, and generate sprites to otherplayers if playerInfo.id in
+    setTimeout(() => {
+      console.log(
+        'STATE FROM SETTIMEOUT',
+        scene.state,
+        'SCENE.STATE PLAYERS *******',
+        scene.state.players
+      );
+      Object.keys(scene.state.players).forEach(function (id) {
+        if (scene.state.players[id].playerId === scene.socket.id) {
+          scene.addPlayer(scene, scene.state.players[id]);
+        } else {
+          scene.addOtherPlayers(scene, scene.state.players[id]);
+        }
+      });
+    }, 2000);
+
     setTimeout(() => {
       // this.cameras.main.setBounds(100, 1000);
       this.cameras.main.startFollow(this.octoGuy, true, 0.08, 0.08);
       this.cameras.main.setZoom(1);
-    }, 3000);
+    }, 5000);
   }
 
   //This helper function will create our animations for the OctoGuy character walking around on the screen.

@@ -92,7 +92,7 @@ export default class WaitingRoom extends Phaser.Scene {
         theSocket.emit('joinRoom', input);
       }, 2000);
       scene.scene.stop('WaitingRoom');
-      scene.scene.start('RedGreenScene', { socket: scene.socket });
+      scene.scene.start('IntermissionRoom', { socket: scene.socket });
     });
   }
   update() {}

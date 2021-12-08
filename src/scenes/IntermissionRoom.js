@@ -217,6 +217,15 @@ export default class IntermissionRoom extends Phaser.Scene {
       this.cameras.main.startFollow(this.octoGuy, true, 0.08, 0.08);
       this.cameras.main.setZoom(1);
     }, 3000);
+
+    setTimeout(() => {
+      const interRoomState = this.state;
+      scene.scene.stop('IntermissionRoom');
+      scene.scene.start('RedGreenScene', {
+        socket: scene.socket,
+        interRoomState,
+      });
+    }, 5000);
   }
 
   //This helper function will create our animations for the OctoGuy character walking around on the screen.
