@@ -13,38 +13,38 @@ But this hasn't happened yet!
 */
 
 // Bring in all the scenes
-import 'phaser';
-import config from './config/config';
-import BgScene from './scenes/BgScene';
-import MainScene from './scenes/MainScene';
-import FgScene from './scenes/FgScene';
-import WaitingRoom from './scenes/WaitingRoom';
-import LoginScene from './scenes/LoginScene';
-import RegisterScene from './scenes/RegisterScene';
-import IntermissionRoom from './scenes/IntermissionRoom';
-import RedGreenScene from './scenes/RedGreenScene';
+import "phaser";
+import config from "./config/config";
+import BgScene from "./scenes/BgScene";
+import MainScene from "./scenes/MainScene";
+import FgScene from "./scenes/FgScene";
+import WaitingRoom from "./scenes/RoomKey";
+import LoginScene from "./scenes/LoginScene";
+import RegisterScene from "./scenes/RegisterScene";
+import IntermissionRoom from "./scenes/IntermissionRoom";
+import RedGreenScene from "./scenes/RedGreenScene";
 
 class Game extends Phaser.Game {
-  constructor() {
-    // Add the config file to the game
-    super(config);
+    constructor() {
+        // Add the config file to the game
+        super(config);
 
-    // Add all the scenes
-    // << ADD ALL SCENES HERE >>
-    this.scene.add('BgScene', BgScene);
-    this.scene.add('FgScene', FgScene);
-    this.scene.add('MainScene', MainScene);
-    this.scene.add('WaitingRoom', WaitingRoom);
-    this.scene.add('LoginScene', LoginScene);
-    this.scene.add('RegisterScene', RegisterScene);
-    this.scene.add('IntermissionRoom', IntermissionRoom);
-    this.scene.add('RedGreenScene', RedGreenScene);
-    // Start the game with the mainscene
-    // << START GAME WITH MAIN SCENE HERE >>
-    this.scene.start('MainScene');
-  }
+        // Add all the scenes
+        // << ADD ALL SCENES HERE >>
+        this.scene.add("BgScene", BgScene);
+        this.scene.add("FgScene", FgScene);
+        this.scene.add("MainScene", MainScene);
+        this.scene.add("WaitingRoom", WaitingRoom);
+        this.scene.add("LoginScene", LoginScene);
+        this.scene.add("RegisterScene", RegisterScene);
+        this.scene.add("IntermissionRoom", IntermissionRoom);
+        this.scene.add("RedGreenScene", RedGreenScene);
+        // Start the game with the mainscene
+        // << START GAME WITH MAIN SCENE HERE >>
+        this.scene.start("MainScene");
+    }
 }
 // Create new instance of game
 window.onload = function () {
-  window.game = new Game();
+    window.game = new Game();
 };
