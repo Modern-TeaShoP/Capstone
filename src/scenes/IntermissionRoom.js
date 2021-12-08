@@ -396,13 +396,68 @@ export default class IntermissionRoom extends Phaser.Scene {
           facing: this.octoGuy.facing,
           roomKey: scene.state.roomKey,
         });
+
+        this.socket.on("newPlayer", function (arg) {
+          const { playerInfo, numPlayers } = arg;
+          scene.addOtherPlayers(scene, playerInfo);
+          scene.state.numPlayers = numPlayers;
+          console.log("number of players", scene.state.numPlayers);
+        });
+
+        this.socket.on("playerMoved", function (playerInfo) {
+          scene.otherPlayers.getChildren().forEach(function (otherPlayer) {
+            if (playerInfo.playerId === otherPlayer.playerId) {
+              const oldX = otherPlayer.x;
+              const oldY = otherPlayer.y;
+              const facing = playerInfo.facing;
+              const lastFacing = playerInfo.facing.lastFacing;
+              if (facing.up === true) {
+                otherPlayer.play("walkUp", true);
+              } else if (facing.down === true) {
+                otherPlayer.play("walkDown", true);
+              } else if (facing.left === true) {
+                otherPlayer.play("walkLeft", true);
+              } else if (facing.right === true) {
+                otherPlayer.play("walkRight", true);
+              }
+              otherPlayer.setPosition(playerInfo.x, playerInfo.y);
+              if (
+                facing.up === false &&
+                facing.down === false &&
+                facing.left === false &&
+                facing.right === false
+              ) {
+                if (lastFacing === "up") {
+                  otherPlayer.play("idleUp", true);
+                } else if (lastFacing === "down") {
+                  otherPlayer.play("idleDown", true);
+                } else if (lastFacing === "left") {
+                  otherPlayer.play("idleLeft", true);
+                } else if (lastFacing === "right") {
+                  otherPlayer.play("idleRight", true);
+                }
+              }
+            }
+          });
+        });
+
+        //Disconnect
+        this.socket.on("disconnected", function (arg) {
+          const { playerId, numPlayers } = arg;
+          scene.state.numPlayers = numPlayers;
+          scene.otherPlayers.getChildren().forEach(function (otherPlayer) {
+            if (playerId === otherPlayer.playerId) {
+              otherPlayer.destroy();
+            }
+          });
+        });
+
+        setTimeout(() => {
+          // this.cameras.main.setBounds(100, 1000);
+          this.cameras.main.startFollow(this.octoGuy, true, 0.08, 0.08);
+          this.cameras.main.setZoom(1);
+        }, 3000);
       }
-      // save old position data
-      this.octoGuy.oldPosition = {
-        x: this.octoGuy.x,
-        y: this.octoGuy.y,
-        rotation: this.octoGuy.rotation,
-      };
     }
   }
 
@@ -418,25 +473,4 @@ export default class IntermissionRoom extends Phaser.Scene {
     otherPlayer.playerId = playerInfo.playerId;
     scene.otherPlayers.add(otherPlayer);
   }
-
-  // addPlayer(scene, playerInfo) {
-  //   console.log('IN ADDPLAYER FUNCTION');
-  //   scene.joined = true;
-  //   scene.octoGuy = scene.physics.add
-  //     .sprite(playerInfo.x, playerInfo.y, 'octoGuy')
-  //     .setOrigin(0.5, 0.5)
-  //     .setSize(30, 40)
-  //     .setOffset(0, 24);
-  // }
-
-  // addOtherPlayers(scene, playerInfo) {
-  //   console.log('IN ADD OTHERPLAYERS FUNCTION');
-  //   const otherPlayer = scene.add.sprite(
-  //     playerInfo.x + 40,
-  //     playerInfo.y + 40,
-  //     'octoGuy'
-  //   );
-  //   otherPlayer.playerId = playerInfo.playerId;
-  //   scene.otherPlayers.add(otherPlayer);
-  // }
 }
