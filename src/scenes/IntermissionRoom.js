@@ -50,6 +50,7 @@ export default class IntermissionRoom extends Phaser.Scene {
       "rightEdgeCollider",
       "assets/colliders/RightEdgeCollider.png"
     );
+    this.load.image("buttonCollider", "assets/colliders/buttonCollider.png");
 
     //Now we'll preload our character as well. Notice the load command here isn't an image, but a spritesheet.
     //The first argument is the key word we'll use to create it later. The second is the path to the sheet.
@@ -108,6 +109,8 @@ export default class IntermissionRoom extends Phaser.Scene {
     this.furnitureGroup.children.each((gameObj) => {
       gameObj.setImmovable(true);
     });
+    this.sceneButton = new Furniture(this, 815, 93, "buttonCollider");
+    this.sceneButton.setImmovable(true);
 
     //This is where we create our character on screen. We're calling in the OctoGuy component we've created, and assigning all of its accompanying methods to player.
     //The first arg is the scene ("this" makes sense), then the x coordinate, the y coordinate, and the last is the key that we've named this asset in the preload method.
@@ -369,6 +372,15 @@ export default class IntermissionRoom extends Phaser.Scene {
 
       //The collider line makes sure the player runs into the furniture objects, rather than going through.
       this.physics.add.collider(this.octoGuy, this.furnitureGroup);
+      this.physics.add.overlap(
+        this.octoGuy,
+        this.sceneButton,
+        function () {
+          console.log("boop!");
+        },
+        null,
+        this
+      );
 
       // emit player movement
       var x = this.octoGuy.x;
