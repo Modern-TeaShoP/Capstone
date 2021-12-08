@@ -5,11 +5,28 @@ export default class RedGreenScene extends Phaser.Scene {
   constructor() {
     super('RedGreenScene');
     this.state = {
-      // gameStarted: false,
+      gameStarted: false,
+      redLight: false,
     };
   }
   init(data) {
     this.socket = data.socket;
+  }
+
+  startRedLight() {
+    setTimeout(() => {
+      this.state.redLight = true;
+      console.log('RED LIGHT');
+      this.startGreenLight();
+    }, 5000);
+  }
+
+  startGreenLight() {
+    setTimeout(() => {
+      this.state.redLight = false;
+      console.log('GREEN LIGHT');
+      this.startRedLight();
+    }, 4000);
   }
 
   preload() {
@@ -243,6 +260,13 @@ export default class RedGreenScene extends Phaser.Scene {
     });
 
     this.anims.create({
+      key: 'frozen',
+      frames: [{ key: 'octoGuy', frame: 1, duration: 50 }],
+      framerate: 10,
+      repeat: 0,
+    });
+
+    this.anims.create({
       key: 'idleUp',
       frames: [{ key: 'octoGuy', frame: 10, duration: 50 }],
       framerate: 10,
@@ -271,8 +295,14 @@ export default class RedGreenScene extends Phaser.Scene {
     const scene = this;
     //Here, we're sending a call to the update function attached to this.player. In this case, it's OctoGuy's update function.
     //Note that we're passing our custom cursors through. The arguments of update will be everything OctoGuy's update function is looking for.
-    if (this.octoGuy) {
+    if (this.octoGuy && this.octoGuy.frozen === false) {
       this.octoGuy.update(this.cursors);
+      if (this.state.redLight === true && this.octoGuy.inMotion === true) {
+        this.octoGuy.setVelocityX(0);
+        this.octoGuy.setVelocityY(0);
+        this.octoGuy.play('frozen');
+        this.octoGuy.frozen = true;
+      }
 
       //These two lines make it so that the player stops when they hit the edges of the canvas.
 
@@ -308,14 +338,13 @@ export default class RedGreenScene extends Phaser.Scene {
   }
 
   addPlayer(scene, playerInfo) {
-    console.log('IN ADD PLAYER FUNCTION');
     scene.joined = true;
-    scene.octoGuy = new OctoGuy(scene, 300, 200, 'octoGuy').setScale(2.3);
+    scene.octoGuy = new OctoGuy(scene, 500, 3700, 'octoGuy').setScale(2.3);
+    this.startRedLight();
   }
 
   addOtherPlayers(scene, playerInfo) {
-    console.log('IN ADD OTHER PLAYERS FUNCTION');
-    const otherPlayer = new OctoGuy(scene, 340, 240, 'octoGuy').setScale(2.3);
+    const otherPlayer = new OctoGuy(scene, 540, 3740, 'octoGuy').setScale(2.3);
     otherPlayer.playerId = playerInfo.playerId;
     scene.otherPlayers.add(otherPlayer);
   }
