@@ -80,6 +80,11 @@ module.exports = (io) => {
       socket.emit('roomCreated', key);
     });
 
+    // Win condition for redLightGreenLight
+    socket.on('gameWon', (data) => {
+      io.to(data.roomKey).emit('gameOver', data);
+    });
+
     // when a player disconnects, remove them from our players object
     socket.on('disconnect', function () {
       let roomKey = 0;
