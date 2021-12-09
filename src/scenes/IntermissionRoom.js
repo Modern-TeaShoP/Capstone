@@ -376,7 +376,7 @@ export default class IntermissionRoom extends Phaser.Scene {
         this.octoGuy,
         this.sceneButton,
         function () {
-          console.log("boop!");
+          // console.log("boop!");
         },
         null,
         this
