@@ -20,31 +20,28 @@ export default class RedGreenScene extends Phaser.Scene {
   startRedLight() {
     this.state.yellowLight = false;
     this.state.redLight = true;
-    console.log("RED LIGHT");
 
     setTimeout(() => {
       this.startGreenLight();
-    }, 4000);
+    }, Phaser.Math.Between(2000, 6000));
   }
 
   startGreenLight() {
     this.state.redLight = false;
     this.state.greenLight = true;
-    console.log("GREEN LIGHT");
 
     setTimeout(() => {
       this.startYellowLight();
-    }, 5000);
+    }, Phaser.Math.Between(3000, 7000));
   }
 
   startYellowLight() {
     this.state.greenLight = false;
     this.state.yellowLight = true;
-    console.log("YELLOW LIGHT");
 
     setTimeout(() => {
       this.startRedLight();
-    }, 1000);
+    }, Phaser.Math.Between(1000, 4000));
   }
 
   preload() {
@@ -235,7 +232,17 @@ export default class RedGreenScene extends Phaser.Scene {
       this.cameras.main.setZoom(1);
     }, 5000);
 
-    this.droneDown = new Secbot(this, 500, 3500, "secbotDown");
+    this.droneGroup = this.physics.add.group({
+      key: "secbotDown",
+      frameQuantity: 100,
+      classType: Secbot,
+    });
+    this.droneGroup.children.each((gameObj) => {
+      gameObj.setImmovable(true);
+    });
+
+    this.lane = new Phaser.Geom.Rectangle(140, 450, 680, 3050);
+    Phaser.Actions.RandomRectangle(this.droneGroup.getChildren(), this.lane);
   }
 
   //This helper function will create our animations for the OctoGuy character walking around on the screen.
@@ -397,11 +404,11 @@ export default class RedGreenScene extends Phaser.Scene {
       }
 
       if (this.state.greenLight) {
-        this.droneDown.play("robotDownGreen", true);
+        this.droneGroup.playAnimation("robotDownGreen", true);
       } else if (this.state.yellowLight) {
-        this.droneDown.play("robotDownYellow", true);
+        this.droneGroup.playAnimation("robotDownYellow", true);
       } else if (this.state.redLight) {
-        this.droneDown.play("robotDownRed");
+        this.droneGroup.playAnimation("robotDownRed", true);
       }
 
       //These two lines make it so that the player stops when they hit the edges of the canvas.
@@ -411,7 +418,7 @@ export default class RedGreenScene extends Phaser.Scene {
 
       //The collider line makes sure the player runs into the furniture objects, rather than going through.
 
-      // this.physics.add.collider(this.octoGuy, this.furnitureGroup);
+      this.physics.add.collider(this.octoGuy, this.droneGroup);
 
       // emit player movement
       var x = this.octoGuy.x;
