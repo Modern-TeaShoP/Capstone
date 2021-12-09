@@ -1,7 +1,6 @@
-import Phaser from "phaser";
+import Phaser from 'phaser';
 
 export default class WaitingRoom extends Phaser.Scene {
-<<<<<<< HEAD
   constructor() {
     super('WaitingRoom');
     this.state = {};
@@ -14,6 +13,7 @@ export default class WaitingRoom extends Phaser.Scene {
 
   preload() {
     this.load.html('codeform', 'assets/text/codeform.html');
+    this.load.image('octopus', 'assets/sprites/octopus.png');
   }
 
   create() {
@@ -23,37 +23,46 @@ export default class WaitingRoom extends Phaser.Scene {
     scene.boxes = scene.add.graphics();
 
     // for popup window
-    scene.popUp.lineStyle(1, 0xffffff);
+    scene.popUp.lineStyle(1, 0x60ceff);
     scene.popUp.fillStyle(0xffffff, 0.5);
 
     // for boxes
-    scene.boxes.lineStyle(1, 0xffffff);
+    scene.boxes.lineStyle(1, 0x60ceff);
     scene.boxes.fillStyle(0xa9a9a9, 1);
 
     // popup window
-    scene.popUp.strokeRect(25, 25, 750, 500);
-    scene.popUp.fillRect(25, 25, 750, 500);
+    const screenCenterX = this.cameras.main.width / 4;
+    const screenCenterY = this.cameras.main.height / 4;
+    scene.popUp.strokeRect(screenCenterX, screenCenterY, 750, 500);
+    scene.popUp.fillRect(screenCenterX, screenCenterY, 750, 500);
+    scene.logo = scene.add.image(screenCenterX, screenCenterY, 'octopus');
 
     //title
-    scene.title = scene.add.text(100, 75, 'Octo Game', {
-      fill: '#add8e6',
-      fontSize: '66px',
-      fontStyle: 'bold',
-    });
+    scene.title = scene.add
+      .text(screenCenterX + 200, screenCenterY + 70, 'Octo Game', {
+        fill: '#ff30e9',
+        fontSize: '66px',
+        fontStyle: 'bold',
+      })
+      .setShadow(0, 0, '#000000', 10, false, true);
 
     //left popup
-    scene.boxes.strokeRect(100, 200, 275, 100);
-    scene.boxes.fillRect(100, 200, 275, 100);
-    scene.requestButton = scene.add.text(140, 215, 'Request Room Key', {
-      fill: '#000000',
-      fontSize: '20px',
-      fontStyle: 'bold',
-    });
+    scene.boxes.strokeRect(screenCenterX + 50, screenCenterY + 200, 275, 100);
+    scene.boxes.fillRect(screenCenterX + 50, screenCenterY + 200, 275, 100);
+    scene.requestButton = scene.add
+      .text(screenCenterX + 85, screenCenterY + 220, 'Request Room Key', {
+        fill: '#000000',
+        fontSize: '20px',
+        fontStyle: 'bold',
+      })
+      .setShadow(0, 0, '#878787', 5, false, true);
 
     //right popup
-    scene.boxes.strokeRect(425, 200, 275, 100);
-    scene.boxes.fillRect(425, 200, 275, 100);
-    scene.inputElement = scene.add.dom(562.5, 250).createFromCache('codeform');
+    scene.boxes.strokeRect(screenCenterX + 420, screenCenterY + 200, 275, 100);
+    scene.boxes.fillRect(screenCenterX + 420, screenCenterY + 200, 275, 100);
+    scene.inputElement = scene.add
+      .dom(screenCenterX + 560, screenCenterY + 250)
+      .createFromCache('codeform');
     scene.inputElement.addListener('click');
     scene.inputElement.on('click', function (event) {
       if (event.target.name === 'enterRoom') {
@@ -68,16 +77,25 @@ export default class WaitingRoom extends Phaser.Scene {
       scene.socket.emit('getRoomCode');
     });
 
-    scene.notValidText = scene.add.text(670, 295, '', {
-      fill: '#ff0000',
-      fontSize: '15px',
-    });
+    scene.notValidText = scene.add.text(
+      screenCenterX + 478,
+      screenCenterY + 268,
+      '',
+      {
+        fill: '#ff0000',
+        fontSize: '17.5px',
+        fontStyle: 'bold',
+      }
+    );
+    // .setShadow(0, 0, "#000000", 10, false, true);
 
-    scene.roomKeyText = scene.add.text(210, 250, '', {
-      fill: '#00ff00',
-      fontSize: '20px',
-      fontStyle: 'bold',
-    });
+    scene.roomKeyText = scene.add
+      .text(screenCenterX + 120, screenCenterY + 240, '', {
+        fill: '#ff30e9',
+        fontSize: '40px',
+        fontStyle: 'bold',
+      })
+      .setShadow(0, 0, '#000000', 10, false, true);
 
     scene.socket.on('roomCreated', function (roomKey) {
       scene.roomKey = roomKey;
@@ -89,146 +107,15 @@ export default class WaitingRoom extends Phaser.Scene {
     });
     scene.socket.on('keyIsValid', function (input) {
       const theSocket = scene.socket;
+
       setTimeout(() => {
         theSocket.emit('joinRoom', input);
       }, 2000);
       scene.scene.stop('WaitingRoom');
-      scene.scene.start('IntermissionRoom', { socket: scene.socket });
+      scene.scene.start('IntermissionRoom', {
+        socket: scene.socket,
+      });
     });
   }
   update() {}
-=======
-    constructor() {
-        super("WaitingRoom");
-        this.state = {};
-        this.hasBeenSet = false;
-    }
-
-    init(data) {
-        this.socket = data.socket;
-    }
-
-    preload() {
-        this.load.html("codeform", "assets/text/codeform.html");
-        this.load.image("octopus", "assets/sprites/octopus.png");
-    }
-
-    create() {
-        const scene = this;
-
-        scene.popUp = scene.add.graphics();
-        scene.boxes = scene.add.graphics();
-
-        // for popup window
-        scene.popUp.lineStyle(1, 0x60ceff);
-        scene.popUp.fillStyle(0xffffff, 0.5);
-
-        // for boxes
-        scene.boxes.lineStyle(1, 0x60ceff);
-        scene.boxes.fillStyle(0xa9a9a9, 1);
-
-        // popup window
-        const screenCenterX = this.cameras.main.width / 4;
-        const screenCenterY = this.cameras.main.height / 4;
-        scene.popUp.strokeRect(screenCenterX, screenCenterY, 750, 500);
-        scene.popUp.fillRect(screenCenterX, screenCenterY, 750, 500);
-        scene.logo = scene.add.image(screenCenterX, screenCenterY, "octopus");
-
-        //title
-        scene.title = scene.add
-            .text(screenCenterX + 200, screenCenterY + 70, "Octo Game", {
-                fill: "#ff30e9",
-                fontSize: "66px",
-                fontStyle: "bold",
-            })
-            .setShadow(0, 0, "#000000", 10, false, true);
-
-        //left popup
-        scene.boxes.strokeRect(
-            screenCenterX + 50,
-            screenCenterY + 200,
-            275,
-            100
-        );
-        scene.boxes.fillRect(screenCenterX + 50, screenCenterY + 200, 275, 100);
-        scene.requestButton = scene.add
-            .text(screenCenterX + 85, screenCenterY + 220, "Request Room Key", {
-                fill: "#000000",
-                fontSize: "20px",
-                fontStyle: "bold",
-            })
-            .setShadow(0, 0, "#878787", 5, false, true);
-
-        //right popup
-        scene.boxes.strokeRect(
-            screenCenterX + 420,
-            screenCenterY + 200,
-            275,
-            100
-        );
-        scene.boxes.fillRect(
-            screenCenterX + 420,
-            screenCenterY + 200,
-            275,
-            100
-        );
-        scene.inputElement = scene.add
-            .dom(screenCenterX + 560, screenCenterY + 250)
-            .createFromCache("codeform");
-        scene.inputElement.addListener("click");
-        scene.inputElement.on("click", function (event) {
-            if (event.target.name === "enterRoom") {
-                const input = scene.inputElement.getChildByName("code-form");
-
-                scene.socket.emit("isKeyValid", input.value);
-            }
-        });
-
-        scene.requestButton.setInteractive();
-        scene.requestButton.on("pointerdown", () => {
-            scene.socket.emit("getRoomCode");
-        });
-
-        scene.notValidText = scene.add.text(
-            screenCenterX + 478,
-            screenCenterY + 268,
-            "",
-            {
-                fill: "#ff0000",
-                fontSize: "17.5px",
-                fontStyle: "bold",
-            }
-        );
-        // .setShadow(0, 0, "#000000", 10, false, true);
-
-        scene.roomKeyText = scene.add
-            .text(screenCenterX + 120, screenCenterY + 240, "", {
-                fill: "#ff30e9",
-                fontSize: "40px",
-                fontStyle: "bold",
-            })
-            .setShadow(0, 0, "#000000", 10, false, true);
-
-        scene.socket.on("roomCreated", function (roomKey) {
-            scene.roomKey = roomKey;
-            scene.roomKeyText.setText(scene.roomKey);
-        });
-
-        scene.socket.on("keyNotValid", function () {
-            scene.notValidText.setText("Invalid Room Key");
-        });
-        scene.socket.on("keyIsValid", function (input) {
-            const theSocket = scene.socket;
-
-            setTimeout(() => {
-                theSocket.emit("joinRoom", input);
-            }, 2000);
-            scene.scene.stop("WaitingRoom");
-            scene.scene.start("IntermissionRoom", {
-                socket: scene.socket,
-            });
-        });
-    }
-    update() {}
->>>>>>> 90407d258c5429862a3454b0c6738d53d514665e
 }

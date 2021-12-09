@@ -5,6 +5,7 @@ import Furniture from '../entity/Furniture';
 export default class IntermissionRoom extends Phaser.Scene {
   constructor() {
     super('IntermissionRoom');
+    this.requiredPlayers = 2;
     this.state = {};
   }
   init(data) {
@@ -139,20 +140,33 @@ export default class IntermissionRoom extends Phaser.Scene {
     // JOINED ROOM - SET STATE
     this.socket.on('setState', function (state) {
       console.log('in setState socket.on');
-      const { roomKey, players, numPlayers } = state;
+      // const { roomKey, players, numPlayers } = state;
       scene.physics.resume();
 
       // STATE
-      scene.state.roomKey = roomKey;
-      scene.state.players = players;
-      scene.state.numPlayers = numPlayers;
+      // scene.state.roomKey = roomKey;
+      // scene.state.players = players;
+      // scene.state.numPlayers = numPlayers;
       scene.add
-        .text(400, 20, `The room code is: ${roomKey}`)
+        .text(400, 20, `The room code is: ${state.roomKey}`)
         .setColor('#60ceff')
         .setFontSize(24)
         .setFontStyle('bold')
         .setShadow(0, 0, 'black', 5, false, true);
     });
+
+    this.startButton = this.add
+      .text(590, 80, '', {
+        fontFamily: 'customFont',
+        fontSize: '30px',
+        fill: '#000',
+      })
+      .setStroke('#fff', 2);
+
+    // renders start button when there are 2 or more players in lobby;
+    if (this.roomInfo.playerNum >= this.requiredPlayers) {
+      this.startButton.setText('Start');
+    }
 
     // PLAYERS
     this.socket.on('currentPlayers', function (arg) {
@@ -220,6 +234,40 @@ export default class IntermissionRoom extends Phaser.Scene {
         if (playerId === otherPlayer.playerId) {
           otherPlayer.destroy();
         }
+      });
+    });
+
+    // This loads the countdown text but it is only visable once the start button is clicked
+    const countdown = this.add.text(640, 80, `10`, {
+      fontFamily: 'customFont',
+      fontSize: '0px',
+      fill: '#fff',
+    });
+
+    // This updates the room of the remaining time before the game starts
+    this.socket.on('timerUpdated', (timeLeft) => {
+      if (this.startButton) {
+        this.startButton.destroy();
+      } // if we make a start button, this would be the logic to make it disappear after a click
+      countdown.setFontSize('30px');
+      countdown.setText(`${timeLeft}`);
+    });
+
+    // receives message to load next scene when timer runs out
+    this.socket.on('loadNextStage', (roomInfo) => {
+      this.socket.removeAllListeners();
+      this.cameras.main.fadeOut(1000, 0, 0, 0);
+
+      this.time.addEvent({
+        delay: 1000,
+        callback: () => {
+          const nextStageKey = roomInfo.games[0];
+          this.scene.stop('IntermissionRoom');
+          this.scene.start(nextStageKey, {
+            socket: this.socket,
+            roomInfo,
+          });
+        },
       });
     });
 
@@ -413,36 +461,13 @@ export default class IntermissionRoom extends Phaser.Scene {
   }
 
   addPlayer(scene, playerInfo) {
-    console.log('IN ADD PLAYER FUNCTION');
     scene.joined = true;
     scene.octoGuy = new OctoGuy(scene, 300, 200, 'octoGuy').setScale(2.3);
   }
 
   addOtherPlayers(scene, playerInfo) {
-    console.log('IN ADD OTHER PLAYERS FUNCTION');
     const otherPlayer = new OctoGuy(scene, 340, 240, 'octoGuy').setScale(2.3);
     otherPlayer.playerId = playerInfo.playerId;
     scene.otherPlayers.add(otherPlayer);
   }
-
-  // addPlayer(scene, playerInfo) {
-  //   console.log('IN ADDPLAYER FUNCTION');
-  //   scene.joined = true;
-  //   scene.octoGuy = scene.physics.add
-  //     .sprite(playerInfo.x, playerInfo.y, 'octoGuy')
-  //     .setOrigin(0.5, 0.5)
-  //     .setSize(30, 40)
-  //     .setOffset(0, 24);
-  // }
-
-  // addOtherPlayers(scene, playerInfo) {
-  //   console.log('IN ADD OTHERPLAYERS FUNCTION');
-  //   const otherPlayer = scene.add.sprite(
-  //     playerInfo.x + 40,
-  //     playerInfo.y + 40,
-  //     'octoGuy'
-  //   );
-  //   otherPlayer.playerId = playerInfo.playerId;
-  //   scene.otherPlayers.add(otherPlayer);
-  // }
 }
