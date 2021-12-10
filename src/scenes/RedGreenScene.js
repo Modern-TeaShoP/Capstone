@@ -256,8 +256,18 @@ export default class RedGreenScene extends Phaser.Scene {
       scene.state.redLight = true;
     });
 
-    this.socket.on('gameOver', function (data) {
+    this.socket.on('gameWinner', function (data) {
       console.log(`The game was won by player ${data.id}`);
+    });
+
+    // launches intermission room after game is complete
+    this.socket.on('gameComplete', function (wd) {
+      scene.scene.stop('RedGreenScene');
+      scene.scene.launch('IntermissionRoom', {
+        socket: this.socket,
+        roomInfo: data.roomInfo,
+        roomKey: data.roomKey,
+      });
     });
 
     this.cameras.main.startFollow(this.octoGuy, true, 0.08, 0.08);
@@ -427,11 +437,16 @@ export default class RedGreenScene extends Phaser.Scene {
     //Note that we're passing our custom cursors through. The arguments of update will be everything OctoGuy's update function is looking for.
     if (this.octoGuy && this.octoGuy.frozen === false) {
       this.octoGuy.update(this.cursors);
-      if (this.state.redLight === true && this.octoGuy.inMotion === true) {
+      if (
+        this.state.redLight === true &&
+        this.octoGuy.inMotion === true &&
+        this.state.gameWon === false
+      ) {
         this.octoGuy.setVelocityX(0);
         this.octoGuy.setVelocityY(0);
         this.octoGuy.play('frozen');
         this.octoGuy.frozen = true;
+        this.socket.emit('playerFinished');
       }
 
       if (this.state.greenLight) {
@@ -462,6 +477,7 @@ export default class RedGreenScene extends Phaser.Scene {
             id: scene.socket.id,
             roomKey: this.roomKey,
           });
+          this.socket.emit('playerFinished');
         }
       }
 

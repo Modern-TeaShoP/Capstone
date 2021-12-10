@@ -11,6 +11,7 @@ class Room {
     this.playersLoaded = 0;
     this.instructionReceived = 0;
     this.gameWon = false;
+    this.numPlayersFinished = 0;
 
     // this.gameResults = {
     // redLightGreenLight: [],

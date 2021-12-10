@@ -138,6 +138,17 @@ module.exports = (io) => {
         // }, 1000);
         // }
       });
+
+      // updating number of players completed (frozen)
+      socket.on('playerFinished', function () {
+        roomInfo.numPlayersFinished += 1;
+        console.log('******', roomInfo.numPlayersFinished);
+      });
+
+      if (roomInfo.numPlayersFinished === roomInfo.numPlayers) {
+        roomInfo.numPlayersFinished = 0;
+        io.in(roomKey).emit('gameComplete', { roomInfo, roomKey });
+      }
     });
 
     // countdown for starting game in the waiting room
@@ -169,7 +180,7 @@ module.exports = (io) => {
 
     // Win condition for redLightGreenLight
     socket.on('gameWon', (data) => {
-      io.to(data.roomKey).emit('gameOver', data);
+      io.to(data.roomKey).emit('gameWinner', data);
     });
 
     // when a player disconnects, remove them from our players object
