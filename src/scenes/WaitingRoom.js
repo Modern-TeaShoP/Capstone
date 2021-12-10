@@ -100,22 +100,13 @@ export default class WaitingRoom extends Phaser.Scene {
     scene.socket.on('roomCreated', function (roomKey) {
       scene.roomKey = roomKey;
       console.log(roomKey, scene.inputElement);
-      scene.inputElement.getChildByName("code-form").value = roomKey;
+      scene.inputElement.getChildByName('code-form').value = roomKey;
       scene.roomKeyText.setText(scene.roomKey);
     });
 
     scene.socket.on('keyNotValid', function () {
       scene.notValidText.setText('Invalid Room Key');
     });
-<<<<<<< HEAD
-    scene.socket.on("keyIsValid", function (input) {
-      const theSocket = scene.socket;
-      setTimeout(() => {
-        theSocket.emit("joinRoom", input);
-      }, 2000);
-      scene.scene.stop("WaitingRoom");
-      scene.scene.start("RedGreenScene", { socket: scene.socket });
-=======
     scene.socket.on('keyIsValid', function (input) {
       scene.socket.emit('joinRoom', input);
     });
@@ -128,7 +119,6 @@ export default class WaitingRoom extends Phaser.Scene {
         roomInfo,
         roomKey,
       });
->>>>>>> be18a4d0dbde2904b53d97998c58cda1ef331551
     });
   }
   update() {}

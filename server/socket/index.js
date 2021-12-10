@@ -80,6 +80,46 @@ module.exports = (io) => {
           }
         }, 1000);
       });
+
+      // keep track of how many players been loaded in the game
+      socket.on('gameLoaded', () => {
+        roomInfo.updateLoadedPlayerNum();
+
+        // start timer after all players been loaded in the stage
+        if (roomInfo.numPlayers === roomInfo.playersLoaded) {
+          // const stageInterval = setInterval(() => {
+          //   if (roomInfo.stageTimer > 0) {
+          //     io.in(roomKey).emit('stageTimerUpdated', roomInfo.stageTimer);
+          //     roomInfo.runStageTimer();
+          //   } else {
+          io.in(roomKey).emit('greenLight');
+          let lastLight = 'green';
+          // clearInterval(stageInterval);
+          while (roomInfo.gameWon === false) {
+            if (lastLight === 'green') {
+              let waitTime = Math.random();
+              setTimeout(() => {
+                io.in(roomKey).emit('yellowLight');
+              }, waitTime);
+              lastLight = 'yellow';
+            } else if (lastLight === 'yellow') {
+              let waitTime = Math.random();
+              setTimeout(() => {
+                io.in(roomKey).emit('redLight');
+              }, waitTime);
+              lastLight = 'red';
+            } else if (lastLight === 'red') {
+              let waitTime = Math.random();
+              setTimeout(() => {
+                io.in(roomKey).emit('greenLight');
+              }, waitTime);
+              lastLight = 'green';
+            }
+          }
+        }
+        // }, 1000);
+        // }
+      });
     });
 
     // countdown for starting game in the waiting room
@@ -106,9 +146,6 @@ module.exports = (io) => {
     socket.on('getRoomCode', async function () {
       let key = codeGenerator();
       gameRooms[key] = new Room();
-      // while (Object.keys(gameRooms).includes(key)) {
-      //   key = codeGenerator();
-      // }
       socket.emit('roomCreated', key);
     });
 

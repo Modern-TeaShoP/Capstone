@@ -296,11 +296,8 @@ export default class IntermissionRoom extends Phaser.Scene {
       });
     });
 
-    setTimeout(() => {
-      // this.cameras.main.setBounds(100, 1000);
-      this.cameras.main.startFollow(this.octoGuy, true, 0.08, 0.08);
-      this.cameras.main.setZoom(1);
-    }, 3000);
+    this.cameras.main.startFollow(this.octoGuy, true, 0.08, 0.08);
+    this.cameras.main.setZoom(1);
   }
 
   //This helper function will create our animations for the OctoGuy character walking around on the screen.
@@ -457,7 +454,8 @@ export default class IntermissionRoom extends Phaser.Scene {
         scene.scene.stop('IntermissionRoom');
         scene.scene.launch('RedGreenScene', {
           socket: scene.socket,
-          interRoomState,
+          roomInfo: scene.roomInfo,
+          roomKey: scene.roomKey,
         });
       });
 

@@ -7,7 +7,7 @@ export default class RedGreenScene extends Phaser.Scene {
     super('RedGreenScene');
     this.state = {
       gameStarted: false,
-      redLight: false,
+      redLight: true,
       greenLight: false,
       yellowLight: false,
       gameWon: false,
@@ -15,34 +15,36 @@ export default class RedGreenScene extends Phaser.Scene {
   }
   init(data) {
     this.socket = data.socket;
+    this.roomInfo = data.roomInfo;
+    this.roomKey = data.roomKey;
   }
 
-  startRedLight() {
-    this.state.yellowLight = false;
-    this.state.redLight = true;
+  // startRedLight() {
+  //   this.state.yellowLight = false;
+  //   this.state.redLight = true;
 
-    setTimeout(() => {
-      this.startGreenLight();
-    }, Phaser.Math.Between(2000, 6000));
-  }
+  //   setTimeout(() => {
+  //     this.startGreenLight();
+  //   }, Phaser.Math.Between(2000, 6000));
+  // }
 
-  startGreenLight() {
-    this.state.redLight = false;
-    this.state.greenLight = true;
+  // startGreenLight() {
+  //   this.state.redLight = false;
+  //   this.state.greenLight = true;
 
-    setTimeout(() => {
-      this.startYellowLight();
-    }, Phaser.Math.Between(3000, 7000));
-  }
+  //   setTimeout(() => {
+  //     this.startYellowLight();
+  //   }, Phaser.Math.Between(3000, 7000));
+  // }
 
-  startYellowLight() {
-    this.state.greenLight = false;
-    this.state.yellowLight = true;
+  // startYellowLight() {
+  //   this.state.greenLight = false;
+  //   this.state.yellowLight = true;
 
-    setTimeout(() => {
-      this.startRedLight();
-    }, Phaser.Math.Between(1000, 4000));
-  }
+  //   setTimeout(() => {
+  //     this.startRedLight();
+  //   }, Phaser.Math.Between(1000, 4000));
+  // }
 
   preload() {
     //First in the preload is to load the tilemap in the form of a .JSON file.
@@ -106,7 +108,8 @@ export default class RedGreenScene extends Phaser.Scene {
   create() {
     const scene = this;
 
-    // this.socket = io();
+    this.socket.emit('gameLoaded');
+
     //In the create method, we need to make the tilemap, where the key's value is the first argument that we passed when loading the tileset.
     const map = this.make.tilemap({ key: 'redGreenScene' });
 
@@ -145,34 +148,44 @@ export default class RedGreenScene extends Phaser.Scene {
     this.otherPlayers = this.physics.add.group();
 
     // JOINED ROOM - SET STATE
-    this.socket.on('setState', function (state) {
-      const { roomKey, players, numPlayers } = state;
-      console.log('should create player', state.players);
-      scene.physics.resume();
+    // this.socket.on('setState', function (state) {
+    //   const { roomKey, players, numPlayers } = state;
+    //   console.log('should create player', state.players);
+    //   scene.physics.resume();
 
-      // STATE
-      scene.state.roomKey = roomKey;
-      scene.state.players = players;
-      scene.state.numPlayers = numPlayers;
-    });
+    // STATE
+    //   scene.state.roomKey = roomKey;
+    //   scene.state.players = players;
+    //   scene.state.numPlayers = numPlayers;
+    // });
 
     // PLAYERS
-    this.socket.on('currentPlayers', function (arg) {
-      const { players, numPlayers } = arg;
-      scene.state.numPlayers = numPlayers;
-      Object.keys(players).forEach(function (id) {
-        if (players[id].playerId === scene.socket.id) {
-          scene.addPlayer(scene, players[id]);
-        } else {
-          scene.addOtherPlayers(scene, players[id]);
-        }
-      });
-    });
+    // this.socket.on('currentPlayers', function (arg) {
+    //   const { players, numPlayers } = arg;
+    //   scene.state.numPlayers = numPlayers;
+    //   Object.keys(players).forEach(function (id) {
+    //     if (players[id].playerId === scene.socket.id) {
+    //       scene.addPlayer(scene, players[id]);
+    //     } else {
+    //       scene.addOtherPlayers(scene, players[id]);
+    //     }
+    //   });
+    // });
 
-    this.socket.on('newPlayer', function (arg) {
-      const { playerInfo, numPlayers } = arg;
-      scene.addOtherPlayers(scene, playerInfo);
-      scene.state.numPlayers = numPlayers;
+    // this.socket.on('newPlayer', function (arg) {
+    //   const { playerInfo, numPlayers } = arg;
+    //   scene.addOtherPlayers(scene, playerInfo);
+    //   scene.state.numPlayers = numPlayers;
+    // });
+
+    // create your player
+    this.octoGuy = new OctoGuy(scene, 500, 3700, 'octoGuy').setScale(2.3);
+
+    // create opponents
+    Object.keys(this.roomInfo.players).forEach((player) => {
+      if (player !== this.socket.id) {
+        scene.addOtherPlayers(scene, player);
+      }
     });
 
     this.socket.on('playerMoved', function (playerInfo) {
@@ -223,15 +236,35 @@ export default class RedGreenScene extends Phaser.Scene {
       });
     });
 
+    // send data to server to know how many people have loaded
+
+    // receive green light information from server
+    this.socket.on('greenLight', function () {
+      this.state.redLight = false;
+      this.state.greenLight = true;
+      this.socket.emit('greenlightReceived');
+    });
+
+    // receive yellow light information from server
+    this.socket.on('yellowLight', function () {
+      this.state.greenLight = false;
+      this.state.yellowLight = true;
+      this.socket.emit('yellowlightRecieved');
+    });
+
+    // receive red light information from server
+    this.socket.on('redLight', function () {
+      this.state.yellowLight = false;
+      this.state.redLight = true;
+      this.socket.emit('redlightReceived');
+    });
+
     this.socket.on('gameOver', function (data) {
       console.log(`The game was won by player ${data.id}`);
     });
 
-    setTimeout(() => {
-      // this.cameras.main.setBounds(100, 1000);
-      this.cameras.main.startFollow(this.octoGuy, true, 0.08, 0.08);
-      this.cameras.main.setZoom(1);
-    }, 5000);
+    this.cameras.main.startFollow(this.octoGuy, true, 0.08, 0.08);
+    this.cameras.main.setZoom(1);
 
     this.droneGroup = this.physics.add.group({
       key: 'secbotDown',
@@ -430,7 +463,7 @@ export default class RedGreenScene extends Phaser.Scene {
           scene.state.gameWon = true;
           this.socket.emit('gameWon', {
             id: scene.socket.id,
-            roomKey: scene.state.roomKey,
+            roomKey: this.roomKey,
           });
         }
       }
@@ -444,14 +477,13 @@ export default class RedGreenScene extends Phaser.Scene {
           x: this.octoGuy.x,
           y: this.octoGuy.y,
           facing: this.octoGuy.facing,
-          roomKey: scene.state.roomKey,
+          roomKey: this.roomKey,
         });
       }
       // save old position data
       this.octoGuy.oldPosition = {
         x: this.octoGuy.x,
         y: this.octoGuy.y,
-        rotation: this.octoGuy.rotation,
       };
     }
   }

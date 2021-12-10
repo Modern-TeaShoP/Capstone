@@ -9,6 +9,8 @@ class Room {
     // *can be implemented in the future to have one game cycle through various games*
     // this.gameIndex = 0;
     this.playersLoaded = 0;
+    this.instructionReceived = 0;
+    this.gameWon = false;
 
     // this.gameResults = {
     // redLightGreenLight: [],
@@ -16,7 +18,6 @@ class Room {
     // hideAndSeek: [],
     //
     // }; *will keep track of placements for each player in the future to determine an overall winner of that Octogame*
-    this.winnerNum = 0;
   }
 
   addNewPlayer(socketId) {
@@ -27,22 +28,12 @@ class Room {
     };
     this.numPlayers += 1;
   }
-  // ** this is the equivalent to roomInfo.players.socketId and roomInfo.numPlayers in the index
 
   removePlayer(socketId) {
     if (this.players[socketId]) {
       delete this.players[socketId];
       this.numPlayers -= 1;
     }
-  }
-
-  updatePlayerList() {
-    // update player list based on winner list for next stage
-    Object.keys(this.players).forEach((playerId) => {
-      if (!this.stageWinners.includes(playerId)) {
-        this.removePlayer(playerId);
-      }
-    });
   }
 
   runTimer() {
