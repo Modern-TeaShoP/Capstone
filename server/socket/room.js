@@ -19,10 +19,15 @@ class Room {
     this.winnerNum = 0;
   }
 
-  // addNewPlayer(socketId) {
-  //   this.players[socketId] = {};
-  //   this.numPlayers += 1;
-  // } ** this is the equivalent to roomInfo.players.socketId and roomInfo.numPlayers in the index
+  addNewPlayer(socketId) {
+    this.players[socketId] = {
+      x: 400,
+      y: 300,
+      playerId: socketId,
+    };
+    this.numPlayers += 1;
+  }
+  // ** this is the equivalent to roomInfo.players.socketId and roomInfo.numPlayers in the index
 
   removePlayer(socketId) {
     if (this.players[socketId]) {

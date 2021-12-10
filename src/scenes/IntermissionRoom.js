@@ -168,26 +168,43 @@ export default class IntermissionRoom extends Phaser.Scene {
       this.startButton.setText('Start');
     }
 
-    // PLAYERS
-    this.socket.on('currentPlayers', function (arg) {
-      const { players, numPlayers } = arg;
-      scene.state.numPlayers = numPlayers;
-      Object.keys(players).forEach(function (id) {
-        console.log(players);
-        if (players[id].playerId === scene.socket.id) {
-          scene.addPlayer(scene, players[id]);
-        } else {
-          scene.addOtherPlayers(scene, players[id]);
-        }
-      });
+    // // PLAYERS
+    // this.socket.on('currentPlayers', function (arg) {
+    //   const { players, numPlayers } = arg;
+    //   scene.state.numPlayers = numPlayers;
+    //   Object.keys(players).forEach(function (id) {
+    //     if (players[id].playerId === scene.socket.id) {
+    //       scene.addPlayer(scene, players[id]);
+    //     } else {
+    //       scene.addOtherPlayers(scene, players[id]);
+    //     }
+    //   });
+    // });
+
+    // this.socket.on('newPlayer', function (arg) {
+    //   const { playerInfo, numPlayers } = arg;
+    //   scene.addOtherPlayers(scene, playerInfo);
+    //   scene.state.numPlayers = numPlayers;
+    //   console.log('number of players', scene.state.numPlayers);
+    // });
+
+    // create new opponent when new player join the room
+    this.socket.on('newPlayerJoined', ({ playerId, playerInfo }) => {
+      if (!this.roomInfo.players[playerId]) {
+        this.roomInfo.playerNum += 1;
+        this.roomInfo.players[playerId] = playerInfo;
+        scene.addOtherPlayers(scene, playerInfo);
+        this.opponents[playerId] = new OctoGuy(
+          scene,
+          300,
+          200,
+          'octoGuy'
+        ).setScale(2.3);
+      }
     });
 
-    this.socket.on('newPlayer', function (arg) {
-      const { playerInfo, numPlayers } = arg;
-      scene.addOtherPlayers(scene, playerInfo);
-      scene.state.numPlayers = numPlayers;
-      console.log('number of players', scene.state.numPlayers);
-    });
+    // create your player
+    this.octoGuy = new OctoGuy(scene, 300, 200, 'octoGuy').setScale(2.3);
 
     this.socket.on('playerMoved', function (playerInfo) {
       scene.otherPlayers.getChildren().forEach(function (otherPlayer) {

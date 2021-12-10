@@ -106,14 +106,16 @@ export default class WaitingRoom extends Phaser.Scene {
       scene.notValidText.setText('Invalid Room Key');
     });
     scene.socket.on('keyIsValid', function (input) {
-      const theSocket = scene.socket;
+      scene.socket.emit('joinRoom', input);
+    });
 
-      setTimeout(() => {
-        theSocket.emit('joinRoom', input);
-      }, 2000);
-      scene.scene.stop('WaitingRoom');
-      scene.scene.start('IntermissionRoom', {
-        socket: scene.socket,
+    this.socket.on('roomInfo', ({ roomInfo, roomKey }) => {
+      this.socket.removeAllListeners();
+      this.scene.stop('WaitingRoom');
+      this.scene.start('InterMissionRoom', {
+        socket: this.socket,
+        roomInfo,
+        roomKey,
       });
     });
   }

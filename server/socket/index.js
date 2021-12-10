@@ -5,16 +5,7 @@ module.exports = (io) => {
     console.log(
       `A socket connection to the server has been made: ${socket.id}`
     );
-
-    // player could create a custom room
-    socket.on('createRoom', () => {
-      let code = roomCodeGenerator();
-      while (Object.keys(gameRooms).includes(code)) {
-        code = roomCodeGenerator();
-      }
-      gameRooms[code] = new Room();
-      socket.emit('roomCreated', code);
-    });
+    //
 
     // socket.on("launchScene", (roomKey) => {
     //     const roomInfo = gameRooms[roomKey];
@@ -28,14 +19,37 @@ module.exports = (io) => {
     socket.on('joinRoom', (roomKey) => {
       if (Object.keys(gameRooms).includes(roomKey)) {
         const roomInfo = gameRooms[roomKey];
-        console.log(roomInfo, '*******');
         if (roomInfo.checkRoomStatus()) {
-          roomInfo.players[socket.id] = {
-            x: 400,
-            y: 300,
-            playerId: socket.id,
-          };
+          // roomInfo.players[socket.id] = {
+          //   x: 400,
+          //   y: 300,
+          //   playerId: socket.id,
+          // };
           socket.join(roomKey);
+
+          // update players info of the room player joined
+          roomInfo.addNewPlayer(socket.id);
+
+          // send all info of that room to player
+          socket.emit('roomInfo', { roomInfo, roomKey });
+
+          // send the players object that has the room info to the new player
+          socket.emit('currentPlayers', {
+            players: roomInfo.players,
+            numPlayers: roomInfo.numPlayers,
+          });
+
+          // update all other players in the room of the new player
+          socket.to(roomKey).emit('newPlayer', {
+            playerInfo: roomInfo.players[socket.id],
+            numPlayers: roomInfo.numPlayers,
+          });
+
+          // send player info to other players in that room
+          socket.to(roomKey).emit('newPlayerJoined', {
+            playerId: socket.id,
+            playerInfo: roomInfo.players[socket.id],
+          });
         }
       }
       // ** the above checks to make sure the room isn't closed before adding the player to it. We should add room limits in the future.
@@ -43,23 +57,11 @@ module.exports = (io) => {
       const roomInfo = gameRooms[roomKey];
 
       // update number of players in room info
-      roomInfo.numPlayers = Object.keys(roomInfo.players).length;
+      // roomInfo.numPlayers = Object.keys(roomInfo.players).length;
 
       //****** for some reason we aren't emiting setState or currentPlayers, even though we do emit the 'newPlayer' */
       // set initial state
-      socket.emit('setState', roomInfo);
-
-      // send the players object that has the room info to the new player
-      socket.emit('currentPlayers', {
-        players: roomInfo.players,
-        numPlayers: roomInfo.numPlayers,
-      });
-
-      // update all other players in the room of the new player
-      socket.to(roomKey).emit('newPlayer', {
-        playerInfo: roomInfo.players[socket.id],
-        numPlayers: roomInfo.numPlayers,
-      });
+      // socket.emit('setState', roomInfo);
 
       //this is the countdown for starting a game from the Intermission Room.
       socket.on('startTimer', () => {
@@ -103,10 +105,10 @@ module.exports = (io) => {
     // get a random code for the room
     socket.on('getRoomCode', async function () {
       let key = codeGenerator();
-      while (Object.keys(gameRooms).includes(key)) {
-        key = codeGenerator();
-      }
       gameRooms[key] = new Room();
+      // while (Object.keys(gameRooms).includes(key)) {
+      //   key = codeGenerator();
+      // }
       socket.emit('roomCreated', key);
     });
 
