@@ -240,23 +240,20 @@ export default class RedGreenScene extends Phaser.Scene {
 
     // receive green light information from server
     this.socket.on('greenLight', function () {
-      this.state.redLight = false;
-      this.state.greenLight = true;
-      this.socket.emit('greenlightReceived');
+      scene.state.redLight = false;
+      scene.state.greenLight = true;
     });
 
     // receive yellow light information from server
     this.socket.on('yellowLight', function () {
-      this.state.greenLight = false;
-      this.state.yellowLight = true;
-      this.socket.emit('yellowlightRecieved');
+      scene.state.greenLight = false;
+      scene.state.yellowLight = true;
     });
 
     // receive red light information from server
     this.socket.on('redLight', function () {
-      this.state.yellowLight = false;
-      this.state.redLight = true;
-      this.socket.emit('redlightReceived');
+      scene.state.yellowLight = false;
+      scene.state.redLight = true;
     });
 
     this.socket.on('gameOver', function (data) {

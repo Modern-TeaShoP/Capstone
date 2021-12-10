@@ -93,29 +93,47 @@ module.exports = (io) => {
           //     roomInfo.runStageTimer();
           //   } else {
           io.in(roomKey).emit('greenLight');
+
           let lastLight = 'green';
           // clearInterval(stageInterval);
-          while (roomInfo.gameWon === false) {
-            if (lastLight === 'green') {
-              let waitTime = Math.random();
-              setTimeout(() => {
+          // while (roomInfo.gameWon === false) {
+          let timeOfLastLight = Date.now();
+          let timeBetweenLights = Math.random() * 5000 + 2000;
+
+          setInterval(() => {
+            if (Date.now() - timeOfLastLight > timeBetweenLights) {
+              if (lastLight === 'green') {
                 io.in(roomKey).emit('yellowLight');
-              }, waitTime);
-              lastLight = 'yellow';
-            } else if (lastLight === 'yellow') {
-              let waitTime = Math.random();
-              setTimeout(() => {
+                lastLight = 'yellow';
+              } else if (lastLight === 'yellow') {
                 io.in(roomKey).emit('redLight');
-              }, waitTime);
-              lastLight = 'red';
-            } else if (lastLight === 'red') {
-              let waitTime = Math.random();
-              setTimeout(() => {
+                lastLight = 'red';
+              } else if (lastLight === 'red') {
                 io.in(roomKey).emit('greenLight');
-              }, waitTime);
-              lastLight = 'green';
+                lastLight = 'green';
+              }
+              timeOfLastLight = Date.now();
+              timeBetweenLights = Math.random() * 5000 + 2000;
             }
-          }
+          }, 500);
+          // if (lastLight === 'green') {
+          //   let waitTime = Math.ceil(Math.random() * 7000 + 1000);
+          //   // console.log('*** wait time is equal to', waitTime);
+          //   // setTimeout(() => {
+          //   io.in(roomKey).emit('yellowLight', { waitTime: waitTime });
+          //   // }, waitTime);
+          //   lastLight = 'yellow';
+          // } else if (lastLight === 'yellow') {
+          //   let waitTime = Math.ceil(Math.random() * 5000 + 1000);
+          //   io.in(roomKey).emit('redLight', { waitTime });
+          //   lastLight = 'red';
+          // } else if (lastLight === 'red') {
+          //   let waitTime = Math.ceil(Math.random() * 4000 + 2000);
+
+          //   io.in(roomKey).emit('greenLight', { waitTime });
+          //   lastLight = 'green';
+          // }
+          // }
         }
         // }, 1000);
         // }
