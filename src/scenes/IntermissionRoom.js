@@ -165,9 +165,9 @@ export default class IntermissionRoom extends Phaser.Scene {
       .setStroke('#fff', 2);
 
     // renders start button when there are 2 or more players in lobby;
-    if (this.roomInfo.numPlayers >= this.requiredPlayers) {
-      this.startButton.setText('Start');
-    }
+    // if (this.roomInfo.numPlayers >= this.requiredPlayers) {
+    //   this.startButton.setText('Start');
+    // }
 
     // // PLAYERS
     // this.socket.on('currentPlayers', function (arg) {
@@ -251,10 +251,29 @@ export default class IntermissionRoom extends Phaser.Scene {
       });
     });
 
+    //after RLGL button is pressed, response from server will send all players to RLGL room
+    this.socket.on('loadRedLightGreenLight', function (data) {
+      console.log(
+        'HERE IS THE DATA FROM LOADRLGL',
+        'this.socket:',
+        scene.socket,
+        'roomInfo:',
+        data.roomInfo,
+        'roomKey:',
+        data.roomKey
+      );
+      scene.scene.stop('IntermissionRoom');
+      scene.scene.launch('RedGreenScene', {
+        socket: scene.socket,
+        roomInfo: data.roomInfo,
+        roomKey: data.roomKey,
+      });
+    });
+
     //Disconnect
     this.socket.on('disconnected', function (arg) {
       const { playerId, numPlayers } = arg;
-      scene.state.numPlayers = numPlayers;
+      this.roomInfo.numPlayers = numPlayers;
       scene.otherPlayers.getChildren().forEach(function (otherPlayer) {
         if (playerId === otherPlayer.playerId) {
           otherPlayer.destroy();
@@ -446,17 +465,17 @@ export default class IntermissionRoom extends Phaser.Scene {
       //The collider line makes sure the player runs into the furniture objects, rather than going through.
       this.physics.add.collider(this.octoGuy, this.furnitureGroup);
       this.physics.add.collider(this.octoGuy, this.sceneButton, function () {
+        scene.socket.emit('redGreenCollider');
         // const theSocket = scene.socket;
-        const interRoomState = scene.state;
         // setTimeout(() => {
         //     theSocket.emit("joinRoom", scene.roomKey);
         // }, 3000);
-        scene.scene.stop('IntermissionRoom');
-        scene.scene.launch('RedGreenScene', {
-          socket: scene.socket,
-          roomInfo: scene.roomInfo,
-          roomKey: scene.roomKey,
-        });
+        // scene.scene.stop('IntermissionRoom');
+        // scene.scene.launch('RedGreenScene', {
+        //   socket: scene.socket,
+        //   roomInfo: scene.roomInfo,
+        //   roomKey: scene.roomKey,
+        // });
       });
 
       // emit player movement

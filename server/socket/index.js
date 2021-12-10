@@ -81,6 +81,11 @@ module.exports = (io) => {
         }, 1000);
       });
 
+      // Once Red Light Green Light Button is pushed, send everyone into red light green light room
+      socket.on('redGreenCollider', function () {
+        io.in(roomKey).emit('loadRedLightGreenLight', { roomInfo, roomKey });
+      });
+
       // keep track of how many players been loaded in the game
       socket.on('gameLoaded', () => {
         roomInfo.updateLoadedPlayerNum();

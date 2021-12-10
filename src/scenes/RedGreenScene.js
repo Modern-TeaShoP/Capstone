@@ -17,6 +17,15 @@ export default class RedGreenScene extends Phaser.Scene {
     this.socket = data.socket;
     this.roomInfo = data.roomInfo;
     this.roomKey = data.roomKey;
+    console.log(
+      'HERE IS THE DATA RECEIVED IN THE INIT',
+      'socket:',
+      data.socket,
+      'roomInfo',
+      data.roomInfo,
+      'roomKey',
+      data.roomKey
+    );
   }
 
   // startRedLight() {
