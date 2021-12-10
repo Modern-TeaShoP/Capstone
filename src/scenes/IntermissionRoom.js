@@ -10,6 +10,8 @@ export default class IntermissionRoom extends Phaser.Scene {
   }
   init(data) {
     this.socket = data.socket;
+    this.roomInfo = data.roomInfo;
+    this.roomKey = data.roomKey;
     // this.userInfo = data.userInfo;
     // console.log("inter", this.socket);
   }
@@ -138,22 +140,21 @@ export default class IntermissionRoom extends Phaser.Scene {
     this.otherPlayers = this.physics.add.group();
 
     // JOINED ROOM - SET STATE
-    this.socket.on('setState', function (state) {
-      console.log('in setState socket.on');
-      // const { roomKey, players, numPlayers } = state;
-      scene.physics.resume();
+    // this.socket.on('setState', function (state) {
+    //   console.log('in setState socket.on');
+    //   // const { roomKey, players, numPlayers } = state;
+    //   scene.physics.resume();
 
-      // STATE
-      // scene.state.roomKey = roomKey;
-      // scene.state.players = players;
-      // scene.state.numPlayers = numPlayers;
-      scene.add
-        .text(400, 20, `The room code is: ${state.roomKey}`)
-        .setColor('#60ceff')
-        .setFontSize(24)
-        .setFontStyle('bold')
-        .setShadow(0, 0, 'black', 5, false, true);
-    });
+    // STATE
+    // scene.state.roomKey = roomKey;
+    // scene.state.players = players;
+    // scene.state.numPlayers = numPlayers;
+    scene.add
+      .text(400, 20, `The room code is: ${this.roomKey}`)
+      .setColor('#60ceff')
+      .setFontSize(24)
+      .setFontStyle('bold')
+      .setShadow(0, 0, 'black', 5, false, true);
 
     this.startButton = this.add
       .text(590, 80, '', {
@@ -164,7 +165,7 @@ export default class IntermissionRoom extends Phaser.Scene {
       .setStroke('#fff', 2);
 
     // renders start button when there are 2 or more players in lobby;
-    if (this.roomInfo.playerNum >= this.requiredPlayers) {
+    if (this.roomInfo.numPlayers >= this.requiredPlayers) {
       this.startButton.setText('Start');
     }
 
@@ -193,18 +194,25 @@ export default class IntermissionRoom extends Phaser.Scene {
       if (!this.roomInfo.players[playerId]) {
         this.roomInfo.playerNum += 1;
         this.roomInfo.players[playerId] = playerInfo;
-        scene.addOtherPlayers(scene, playerInfo);
-        this.opponents[playerId] = new OctoGuy(
-          scene,
-          300,
-          200,
-          'octoGuy'
-        ).setScale(2.3);
+        scene.addOtherPlayers(scene, playerId);
+        // this.opponents[playerId] = new OctoGuy(
+        //   scene,
+        //   300,
+        //   200,
+        //   'octoGuy'
+        // ).setScale(2.3);
       }
     });
 
     // create your player
     this.octoGuy = new OctoGuy(scene, 300, 200, 'octoGuy').setScale(2.3);
+
+    // create opponents
+    Object.keys(this.roomInfo.players).forEach((player) => {
+      if (player !== this.socket.id) {
+        scene.addOtherPlayers(scene, player);
+      }
+    });
 
     this.socket.on('playerMoved', function (playerInfo) {
       scene.otherPlayers.getChildren().forEach(function (otherPlayer) {
@@ -465,7 +473,7 @@ export default class IntermissionRoom extends Phaser.Scene {
           x: this.octoGuy.x,
           y: this.octoGuy.y,
           facing: this.octoGuy.facing,
-          roomKey: scene.state.roomKey,
+          roomKey: this.roomKey,
         });
       }
       // save old position data
@@ -482,9 +490,9 @@ export default class IntermissionRoom extends Phaser.Scene {
     scene.octoGuy = new OctoGuy(scene, 300, 200, 'octoGuy').setScale(2.3);
   }
 
-  addOtherPlayers(scene, playerInfo) {
+  addOtherPlayers(scene, playerId) {
     const otherPlayer = new OctoGuy(scene, 340, 240, 'octoGuy').setScale(2.3);
-    otherPlayer.playerId = playerInfo.playerId;
+    otherPlayer.playerId = playerId;
     scene.otherPlayers.add(otherPlayer);
   }
 }

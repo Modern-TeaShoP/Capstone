@@ -34,16 +34,16 @@ module.exports = (io) => {
           socket.emit('roomInfo', { roomInfo, roomKey });
 
           // send the players object that has the room info to the new player
-          socket.emit('currentPlayers', {
-            players: roomInfo.players,
-            numPlayers: roomInfo.numPlayers,
-          });
+          // socket.emit('currentPlayers', {
+          //   players: roomInfo.players,
+          //   numPlayers: roomInfo.numPlayers,
+          // });
 
           // update all other players in the room of the new player
-          socket.to(roomKey).emit('newPlayer', {
-            playerInfo: roomInfo.players[socket.id],
-            numPlayers: roomInfo.numPlayers,
-          });
+          // socket.to(roomKey).emit('newPlayer', {
+          //   playerInfo: roomInfo.players[socket.id],
+          //   numPlayers: roomInfo.numPlayers,
+          // });
 
           // send player info to other players in that room
           socket.to(roomKey).emit('newPlayerJoined', {

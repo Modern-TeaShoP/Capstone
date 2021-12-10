@@ -112,7 +112,7 @@ export default class WaitingRoom extends Phaser.Scene {
     this.socket.on('roomInfo', ({ roomInfo, roomKey }) => {
       this.socket.removeAllListeners();
       this.scene.stop('WaitingRoom');
-      this.scene.start('InterMissionRoom', {
+      this.scene.start('IntermissionRoom', {
         socket: this.socket,
         roomInfo,
         roomKey,
