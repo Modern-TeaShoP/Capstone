@@ -99,6 +99,8 @@ export default class WaitingRoom extends Phaser.Scene {
 
     scene.socket.on("roomCreated", function (roomKey) {
       scene.roomKey = roomKey;
+      console.log(roomKey, scene.inputElement);
+      scene.inputElement.getChildByName("code-form").value = roomKey;
       scene.roomKeyText.setText(scene.roomKey);
     });
 
