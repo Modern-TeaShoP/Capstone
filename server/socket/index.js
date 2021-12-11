@@ -1,5 +1,16 @@
 const { Room, gameRooms } = require('./room');
 
+const generateDronePositions = function () {
+  let droneArray = [];
+  for (let i = 0; i < 100; i++) {
+    let x = Math.floor(Math.random() * (680 - 140 + 1)) + 140;
+    let y = Math.floor(Math.random() * (3050 - 450 + 1)) + 450;
+    let location = [x, y];
+    droneArray.push(location);
+  }
+  return droneArray;
+};
+
 module.exports = (io) => {
   io.on('connection', (socket) => {
     console.log(
@@ -81,9 +92,16 @@ module.exports = (io) => {
         }, 1000);
       });
 
-      // Once Red Light Green Light Button is pushed, send everyone into red light green light room
+      // Once RLGL is created, make an array
+
+      // Once Red Light Green Light Button is pushed, send everyone into red light green light room - also generate drone locations and send those to everyone in the room.
       socket.on('redGreenCollider', function () {
-        io.in(roomKey).emit('loadRedLightGreenLight', { roomInfo, roomKey });
+        let droneLocations = generateDronePositions();
+        io.in(roomKey).emit('loadRedLightGreenLight', {
+          roomInfo,
+          roomKey,
+          droneLocations,
+        });
       });
 
       // keep track of how many players been loaded in the game
@@ -105,7 +123,7 @@ module.exports = (io) => {
           let timeOfLastLight = Date.now();
           let timeBetweenLights = Math.random() * 5000 + 2000;
 
-          setInterval(() => {
+          let lightTimer = setInterval(() => {
             if (Date.now() - timeOfLastLight > timeBetweenLights) {
               if (lastLight === 'green') {
                 io.in(roomKey).emit('yellowLight');
@@ -146,14 +164,14 @@ module.exports = (io) => {
 
       // updating number of players completed (frozen)
       socket.on('playerFinished', function () {
-        roomInfo.numPlayersFinished += 1;
-        console.log('******', roomInfo.numPlayersFinished);
-      });
+        roomInfo.playerFinished();
+        if (roomInfo.numPlayersFinished === roomInfo.numPlayers) {
+          roomInfo.numPlayersFinished = 0;
+          // clearInterval(lightTimer)
 
-      if (roomInfo.numPlayersFinished === roomInfo.numPlayers) {
-        roomInfo.numPlayersFinished = 0;
-        io.in(roomKey).emit('gameComplete', { roomInfo, roomKey });
-      }
+          io.in(roomKey).emit('gameComplete', { roomInfo, roomKey });
+        }
+      });
     });
 
     // countdown for starting game in the waiting room

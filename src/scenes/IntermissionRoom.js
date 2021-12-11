@@ -214,6 +214,7 @@ export default class IntermissionRoom extends Phaser.Scene {
       }
     });
 
+    scene.socket.removeAllListeners('playerMoved');
     this.socket.on('playerMoved', function (playerInfo) {
       scene.otherPlayers.getChildren().forEach(function (otherPlayer) {
         if (playerInfo.playerId === otherPlayer.playerId) {
@@ -263,17 +264,19 @@ export default class IntermissionRoom extends Phaser.Scene {
         data.roomKey
       );
       scene.scene.stop('IntermissionRoom');
+      scene.socket.removeAllListeners('playerMoved');
       scene.scene.launch('RedGreenScene', {
         socket: scene.socket,
         roomInfo: data.roomInfo,
         roomKey: data.roomKey,
+        droneLocations: data.droneLocations,
       });
     });
 
     //Disconnect
     this.socket.on('disconnected', function (arg) {
       const { playerId, numPlayers } = arg;
-      this.roomInfo.numPlayers = numPlayers;
+      scene.roomInfo.numPlayers = numPlayers;
       scene.otherPlayers.getChildren().forEach(function (otherPlayer) {
         if (playerId === otherPlayer.playerId) {
           otherPlayer.destroy();
@@ -511,5 +514,9 @@ export default class IntermissionRoom extends Phaser.Scene {
     const otherPlayer = new OctoGuy(scene, 340, 240, 'octoGuy').setScale(2.3);
     otherPlayer.playerId = playerId;
     scene.otherPlayers.add(otherPlayer);
+    console.log(
+      'HERE ARE THE OTHER PLAYERS IN INTERMISSION ROOM',
+      scene.otherPlayers
+    );
   }
 }

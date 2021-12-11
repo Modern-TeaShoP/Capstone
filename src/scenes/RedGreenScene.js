@@ -17,15 +17,7 @@ export default class RedGreenScene extends Phaser.Scene {
     this.socket = data.socket;
     this.roomInfo = data.roomInfo;
     this.roomKey = data.roomKey;
-    console.log(
-      'HERE IS THE DATA RECEIVED IN THE INIT',
-      'socket:',
-      data.socket,
-      'roomInfo',
-      data.roomInfo,
-      'roomKey',
-      data.roomKey
-    );
+    this.droneLocations = data.droneLocations;
   }
 
   // startRedLight() {
@@ -270,10 +262,10 @@ export default class RedGreenScene extends Phaser.Scene {
     });
 
     // launches intermission room after game is complete
-    this.socket.on('gameComplete', function (wd) {
+    this.socket.on('gameComplete', function (data) {
       scene.scene.stop('RedGreenScene');
       scene.scene.launch('IntermissionRoom', {
-        socket: this.socket,
+        socket: scene.socket,
         roomInfo: data.roomInfo,
         roomKey: data.roomKey,
       });
@@ -282,17 +274,221 @@ export default class RedGreenScene extends Phaser.Scene {
     this.cameras.main.startFollow(this.octoGuy, true, 0.08, 0.08);
     this.cameras.main.setZoom(1);
 
+    // Create drones group
     this.droneGroup = this.physics.add.group({
       key: 'secbotDown',
-      frameQuantity: 100,
+      frameQuantity: 1,
       classType: Secbot,
     });
+
+    // Take the locations received from server and generate them on the map
+    // this.droneLocations.forEach((el) => {
+    //   console.log('These are the drones', el, el[0], el[1]);
+    //   return this.droneGroup.create(el[0], el[1]);
+    // });
+    // console.log('here are our drone locations', this.droneLocations);
+    // for (let el of this.droneLocations) {
+    //   console.log(el);
+    //   this.droneGroup.create(el[0], el[1]);
+    // }
+
+    // let newDroneGroup = this.droneGroup;
+    // console.log(newDroneGroup, ' THIS IS THE DRONE GROUP');
+    // for (let i = 0; i < this.droneLocations.length; i++) {
+    //   console.log(i);
+    //   newDroneGroup.create(
+    //     this.droneLocations[i][0],
+    //     this.droneLocations[i][1]
+    //   );
+    // }
+
+    // this.lane = new Phaser.Geom.Rectangle(140, 450, 680, 3050);
+    // Phaser.Actions.RandomRectangle(this.droneGroup.getChildren(), this.lane);
+
+    //We have to ask the server to give us drone coordinates to put on the map as obstacles. That's passed to the clients in when the server emits the start scene event when the button is pressed.
+
+    // Probably delete this - Return drone locations from server to put populate onto the map
+    // this.socket.on('createDroneLocations', function (data) {
+    //   data.forEach((el) => {
+    //     this.droneGroup.create(el[0], el[1]);
+    //   });
+    // });
+
+    this.droneGroup.create(700, 3500);
+    this.droneGroup.create(160, 3000);
+    this.droneGroup.create(730, 2500);
+    this.droneGroup.create(400, 2000);
+    this.droneGroup.create(540, 1500);
+    this.droneGroup.create(270, 1000);
+
+    this.droneGroup.create(
+      this.droneLocations[0][0],
+      this.droneLocations[0][1]
+    );
+    this.droneGroup.create(
+      this.droneLocations[1][0],
+      this.droneLocations[1][1]
+    );
+    this.droneGroup.create(
+      this.droneLocations[2][0],
+      this.droneLocations[2][1]
+    );
+    this.droneGroup.create(
+      this.droneLocations[3][0],
+      this.droneLocations[3][1]
+    );
+    this.droneGroup.create(
+      this.droneLocations[4][0],
+      this.droneLocations[4][1]
+    );
+    this.droneGroup.create(
+      this.droneLocations[5][0],
+      this.droneLocations[5][1]
+    );
+    this.droneGroup.create(
+      this.droneLocations[6][0],
+      this.droneLocations[6][1]
+    );
+    this.droneGroup.create(
+      this.droneLocations[7][0],
+      this.droneLocations[7][1]
+    );
+    this.droneGroup.create(
+      this.droneLocations[8][0],
+      this.droneLocations[8][1]
+    );
+    this.droneGroup.create(
+      this.droneLocations[9][0],
+      this.droneLocations[9][1]
+    );
+    this.droneGroup.create(
+      this.droneLocations[10][0],
+      this.droneLocations[10][1]
+    );
+    this.droneGroup.create(
+      this.droneLocations[11][0],
+      this.droneLocations[11][1]
+    );
+    this.droneGroup.create(
+      this.droneLocations[12][0],
+      this.droneLocations[12][1]
+    );
+    this.droneGroup.create(
+      this.droneLocations[13][0],
+      this.droneLocations[13][1]
+    );
+    this.droneGroup.create(
+      this.droneLocations[14][0],
+      this.droneLocations[14][1]
+    );
+    this.droneGroup.create(
+      this.droneLocations[15][0],
+      this.droneLocations[15][1]
+    );
+    this.droneGroup.create(
+      this.droneLocations[16][0],
+      this.droneLocations[16][1]
+    );
+    this.droneGroup.create(
+      this.droneLocations[17][0],
+      this.droneLocations[17][1]
+    );
+    this.droneGroup.create(
+      this.droneLocations[18][0],
+      this.droneLocations[18][1]
+    );
+    this.droneGroup.create(
+      this.droneLocations[19][0],
+      this.droneLocations[19][1]
+    );
+    this.droneGroup.create(
+      this.droneLocations[20][0],
+      this.droneLocations[20][1]
+    );
+    this.droneGroup.create(
+      this.droneLocations[21][0],
+      this.droneLocations[21][1]
+    );
+    this.droneGroup.create(
+      this.droneLocations[22][0],
+      this.droneLocations[22][1]
+    );
+    this.droneGroup.create(
+      this.droneLocations[23][0],
+      this.droneLocations[23][1]
+    );
+    this.droneGroup.create(
+      this.droneLocations[24][0],
+      this.droneLocations[24][1]
+    );
+    this.droneGroup.create(
+      this.droneLocations[25][0],
+      this.droneLocations[25][1]
+    );
+    this.droneGroup.create(
+      this.droneLocations[26][0],
+      this.droneLocations[26][1]
+    );
+    this.droneGroup.create(
+      this.droneLocations[27][0],
+      this.droneLocations[27][1]
+    );
+    this.droneGroup.create(
+      this.droneLocations[28][0],
+      this.droneLocations[28][1]
+    );
+    this.droneGroup.create(
+      this.droneLocations[29][0],
+      this.droneLocations[29][1]
+    );
+    this.droneGroup.create(
+      this.droneLocations[30][0],
+      this.droneLocations[30][1]
+    );
+    this.droneGroup.create(
+      this.droneLocations[31][0],
+      this.droneLocations[31][1]
+    );
+    this.droneGroup.create(
+      this.droneLocations[32][0],
+      this.droneLocations[32][1]
+    );
+    this.droneGroup.create(
+      this.droneLocations[33][0],
+      this.droneLocations[33][1]
+    );
+    this.droneGroup.create(
+      this.droneLocations[34][0],
+      this.droneLocations[34][1]
+    );
+    this.droneGroup.create(
+      this.droneLocations[35][0],
+      this.droneLocations[35][1]
+    );
+    this.droneGroup.create(
+      this.droneLocations[36][0],
+      this.droneLocations[36][1]
+    );
+    this.droneGroup.create(
+      this.droneLocations[37][0],
+      this.droneLocations[37][1]
+    );
+    this.droneGroup.create(
+      this.droneLocations[38][0],
+      this.droneLocations[38][1]
+    );
+    this.droneGroup.create(
+      this.droneLocations[39][0],
+      this.droneLocations[39][1]
+    );
+    this.droneGroup.create(
+      this.droneLocations[40][0],
+      this.droneLocations[40][1]
+    );
+
     this.droneGroup.children.each((gameObj) => {
       gameObj.setImmovable(true);
     });
-
-    this.lane = new Phaser.Geom.Rectangle(140, 450, 680, 3050);
-    Phaser.Actions.RandomRectangle(this.droneGroup.getChildren(), this.lane);
   }
 
   //This helper function will create our animations for the OctoGuy character walking around on the screen.
@@ -516,10 +712,11 @@ export default class RedGreenScene extends Phaser.Scene {
     this.startRedLight();
   }
 
-  addOtherPlayers(scene, playerInfo) {
+  addOtherPlayers(scene, playerId) {
     const otherPlayer = new OctoGuy(scene, 540, 3740, 'octoGuy').setScale(2.3);
-    otherPlayer.playerId = playerInfo.playerId;
+    otherPlayer.playerId = playerId;
     scene.otherPlayers.add(otherPlayer);
+    console.log('HERE ARE THE OTHER PLAYERS', scene.otherPlayers);
   }
 
   // addPlayer(scene, playerInfo) {

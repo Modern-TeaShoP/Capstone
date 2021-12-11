@@ -37,6 +37,10 @@ class Room {
     }
   }
 
+  playerFinished() {
+    this.numPlayersFinished += 1;
+  }
+
   runTimer() {
     if (this.countdown > 0) {
       this.countdown -= 1;
