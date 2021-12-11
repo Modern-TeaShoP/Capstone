@@ -4,7 +4,7 @@ const generateDronePositions = function () {
   let droneArray = [];
   for (let i = 0; i < 100; i++) {
     let x = Math.floor(Math.random() * (680 - 140 + 1)) + 140;
-    let y = Math.floor(Math.random() * (3050 - 450 + 1)) + 450;
+    let y = Math.floor(Math.random() * (3500 - 450 + 1)) + 450;
     let location = [x, y];
     droneArray.push(location);
   }
@@ -104,6 +104,8 @@ module.exports = (io) => {
         });
       });
 
+      let lightTimer;
+
       // keep track of how many players been loaded in the game
       socket.on('gameLoaded', () => {
         roomInfo.updateLoadedPlayerNum();
@@ -123,7 +125,7 @@ module.exports = (io) => {
           let timeOfLastLight = Date.now();
           let timeBetweenLights = Math.random() * 5000 + 2000;
 
-          let lightTimer = setInterval(() => {
+          lightTimer = setInterval(() => {
             if (Date.now() - timeOfLastLight > timeBetweenLights) {
               if (lastLight === 'green') {
                 io.in(roomKey).emit('yellowLight');
@@ -139,24 +141,6 @@ module.exports = (io) => {
               timeBetweenLights = Math.random() * 5000 + 2000;
             }
           }, 500);
-          // if (lastLight === 'green') {
-          //   let waitTime = Math.ceil(Math.random() * 7000 + 1000);
-          //   // console.log('*** wait time is equal to', waitTime);
-          //   // setTimeout(() => {
-          //   io.in(roomKey).emit('yellowLight', { waitTime: waitTime });
-          //   // }, waitTime);
-          //   lastLight = 'yellow';
-          // } else if (lastLight === 'yellow') {
-          //   let waitTime = Math.ceil(Math.random() * 5000 + 1000);
-          //   io.in(roomKey).emit('redLight', { waitTime });
-          //   lastLight = 'red';
-          // } else if (lastLight === 'red') {
-          //   let waitTime = Math.ceil(Math.random() * 4000 + 2000);
-
-          //   io.in(roomKey).emit('greenLight', { waitTime });
-          //   lastLight = 'green';
-          // }
-          // }
         }
         // }, 1000);
         // }
@@ -167,7 +151,7 @@ module.exports = (io) => {
         roomInfo.playerFinished();
         if (roomInfo.numPlayersFinished === roomInfo.numPlayers) {
           roomInfo.numPlayersFinished = 0;
-          // clearInterval(lightTimer)
+          // clearInterval(lightTimer);
 
           io.in(roomKey).emit('gameComplete', { roomInfo, roomKey });
         }

@@ -254,15 +254,6 @@ export default class IntermissionRoom extends Phaser.Scene {
 
     //after RLGL button is pressed, response from server will send all players to RLGL room
     this.socket.on('loadRedLightGreenLight', function (data) {
-      console.log(
-        'HERE IS THE DATA FROM LOADRLGL',
-        'this.socket:',
-        scene.socket,
-        'roomInfo:',
-        data.roomInfo,
-        'roomKey:',
-        data.roomKey
-      );
       scene.scene.stop('IntermissionRoom');
       scene.socket.removeAllListeners('playerMoved');
       scene.scene.launch('RedGreenScene', {
