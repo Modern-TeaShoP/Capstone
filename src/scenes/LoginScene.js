@@ -61,7 +61,7 @@ export default class LoginScene extends Phaser.Scene {
         const password = scene.inputElement.getChildByName('password').value;
 
         const foundUser = await axios.post(
-          'http://octogame.herokuapp.com/login',
+          'https://octogame.herokuapp.com/login',
           {
             email,
             password,

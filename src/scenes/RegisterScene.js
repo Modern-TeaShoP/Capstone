@@ -65,7 +65,7 @@ export default class RegisterScene extends Phaser.Scene {
         console.log(email, password);
 
         const createdUser = await axios.post(
-          'http://octogame.herokuapp.com/register',
+          'https://octogame.herokuapp.com/register',
           {
             email,
             password,
