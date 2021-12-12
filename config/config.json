@@ -4,8 +4,7 @@
     "password": "Password123",
     "database": "herokuoctogame",
     "host": "localhost",
-    "dialect": "postgres",
-    "operatorsAliases": false
+    "dialect": "postgres"
   },
   "test": {
     "username": "root",
@@ -20,7 +19,12 @@
     "database": "herokuoctogame",
     "host": "127.0.0.1",
     "dialect": "postgres",
-    "operatorsAliases": false,
+    "dialectOptions": {
+      "ssl": {
+        "require": true,
+        "rejectUnauthorized": false
+      }
+    },
     "use_env_variable": "DATABASE_URL"
   }
 }
