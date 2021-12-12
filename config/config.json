@@ -18,7 +18,7 @@
     "username": "Joe",
     "password": "password",
     "database": "herokuoctogame",
-    "host": "127.0.0.1",
+    "host": "localhost",
     "dialect": "postgres",
     "operatorsAliases": false,
     "use_env_variable": "DATABASE_URL"
