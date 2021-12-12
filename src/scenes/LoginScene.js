@@ -1,9 +1,9 @@
-import Phaser from "phaser";
-import axios from "axios";
+import Phaser from 'phaser';
+import axios from 'axios';
 
 export default class LoginScene extends Phaser.Scene {
   constructor() {
-    super("LoginScene");
+    super('LoginScene');
     this.state = {};
     this.hasBeenSet = false;
   }
@@ -13,8 +13,8 @@ export default class LoginScene extends Phaser.Scene {
   }
 
   preload() {
-    this.load.html("loginform", "assets/text/loginform.html");
-    this.load.image("octopus", "assets/sprites/octopus.png");
+    this.load.html('loginform', 'assets/text/loginform.html');
+    this.load.image('octopus', 'assets/sprites/octopus.png');
   }
 
   create() {
@@ -36,47 +36,50 @@ export default class LoginScene extends Phaser.Scene {
     const screenCenterY = this.cameras.main.height / 4;
     scene.popUp.strokeRect(screenCenterX, screenCenterY, 750, 500);
     scene.popUp.fillRect(screenCenterX, screenCenterY, 750, 500);
-    scene.logo = scene.add.image(screenCenterX, screenCenterY, "octopus");
+    scene.logo = scene.add.image(screenCenterX, screenCenterY, 'octopus');
 
     //title
     scene.title = scene.add
-      .text(screenCenterX + 250, screenCenterY + 70, "Login", {
-        fill: "#ff30e9",
-        fontSize: "66px",
-        fontStyle: "bold",
+      .text(screenCenterX + 250, screenCenterY + 70, 'Login', {
+        fill: '#ff30e9',
+        fontSize: '66px',
+        fontStyle: 'bold',
       })
-      .setShadow(0, 0, "#000000", 10, false, true);
+      .setShadow(0, 0, '#000000', 10, false, true);
 
     //right popup
     scene.boxes.strokeRect(screenCenterX + 225, screenCenterY + 200, 275, 100);
     scene.boxes.fillRect(screenCenterX + 225, screenCenterY + 200, 275, 100);
     scene.inputElement = scene.add
       .dom(screenCenterX + 360, screenCenterY + 250)
-      .createFromCache("loginform");
-    scene.inputElement.addListener("click");
-    scene.inputElement.on("click", async function (event) {
-      if (event.target.name === "submitLogin") {
-        const email = scene.inputElement.getChildByName("email").value;
+      .createFromCache('loginform');
+    scene.inputElement.addListener('click');
+    scene.inputElement.on('click', async function (event) {
+      if (event.target.name === 'submitLogin') {
+        const email = scene.inputElement.getChildByName('email').value;
 
-        const password = scene.inputElement.getChildByName("password").value;
+        const password = scene.inputElement.getChildByName('password').value;
 
-        const foundUser = await axios.post("http://localhost:8080/login", {
-          email,
-          password,
-        });
+        const foundUser = await axios.post(
+          'http://octogame.herokuapp.com/login',
+          {
+            email,
+            password,
+          }
+        );
 
         if (foundUser !== null) {
-          scene.scene.stop("LoginScene");
-          scene.scene.launch("WaitingRoom", { socket: scene.socket });
+          scene.scene.stop('LoginScene');
+          scene.scene.launch('WaitingRoom', { socket: scene.socket });
           // scene.scene.start('WaitingRoom');
         }
 
         //axios calls go here
         //this will need to be async
       }
-      if (event.target.name === "launchRegister") {
-        scene.scene.stop("LoginScene");
-        scene.scene.launch("RegisterScene", { socket: scene.socket });
+      if (event.target.name === 'launchRegister') {
+        scene.scene.stop('LoginScene');
+        scene.scene.launch('RegisterScene', { socket: scene.socket });
       }
     });
   }
