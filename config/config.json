@@ -1,7 +1,7 @@
 {
   "development": {
     "username": "Joe",
-    "password": "",
+    "password": "Password123",
     "database": "herokuoctogame",
     "host": "localhost",
     "dialect": "postgres",
@@ -16,7 +16,7 @@
   },
   "production": {
     "username": "Joe",
-    "password": "password",
+    "password": "Password123",
     "database": "herokuoctogame",
     "host": "localhost",
     "dialect": "postgres",
