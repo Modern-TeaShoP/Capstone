@@ -10,7 +10,8 @@ const PORT = process.env.PORT || 8080;
 const app = express();
 const socketio = require('socket.io');
 
-const User = require('./db/models/User');
+// const User = require('./db/models/User');
+const User = require('../models/user');
 
 const bcrypt = require('bcrypt');
 const passport = require('passport');
