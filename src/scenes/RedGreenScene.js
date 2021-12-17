@@ -132,9 +132,6 @@ export default class RedGreenScene extends Phaser.Scene {
     this.walls.setCollisionByProperty({ collides: true });
     this.drones.setCollisionByProperty({ collides: true });
 
-    this.physics.add.collider(this.octoGuy, this.walls);
-    this.physics.add.collider(this.octoGuy, this.drones);
-
     //Using this line, we create a group that will encompass all the furniture, or otherwise all the collidable, non-interactive object in the game world.
     //Then we'll use the helper function to make our furniture. We'll make a new function for each type of furniture.
     //Doing it this way, you'll need to manually put in the x and y values of the item. Kind of a pain, but we're stuck with it for now.
@@ -527,6 +524,8 @@ export default class RedGreenScene extends Phaser.Scene {
       this.physics.add.collider(this.octoGuy, this.droneGroup);
       // this.physics.add.collider(this.octoGuy, walls);
       // this.physics.add.collider(this.octoGuy, drones);
+      this.physics.add.collider(this.octoGuy, this.walls);
+      this.physics.add.collider(this.octoGuy, this.drones);
 
       // emit player movement
       var x = this.octoGuy.x;
