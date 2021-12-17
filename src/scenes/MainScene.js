@@ -1,23 +1,23 @@
-import "phaser";
-import OctoGuy from "../entity/OctoGuy";
+import 'phaser';
+import OctoGuy from '../entity/OctoGuy';
 
 export default class MainScene extends Phaser.Scene {
-    constructor() {
-        super("MainScene");
-        this.state = {};
-    }
+  constructor() {
+    super('MainScene');
+    this.state = {};
+  }
 
-    preload() {}
+  preload() {}
 
-    create() {
-        const scene = this;
+  create() {
+    const scene = this;
 
-        //CREATE SOCKET
-        this.socket = io();
+    //CREATE SOCKET
+    this.socket = io();
 
-        //LAUNCH LOGIN PAGE
-        scene.scene.launch("WaitingRoom", { socket: scene.socket });
-    }
+    //LAUNCH LOGIN PAGE
+    scene.scene.launch('StoryScene', { socket: scene.socket });
+  }
 
-    update() {}
+  update() {}
 }
