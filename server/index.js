@@ -56,7 +56,7 @@ const createApp = () => {
   app.use(methodOverride('_method'));
 
   app.post(
-    '/login',
+    'https://octogame.herokuapp.com/login/login',
     checkNotAuthenticated,
     passport.authenticate('local', {}),
     (req, res) => {
@@ -64,13 +64,17 @@ const createApp = () => {
     }
   );
 
-  app.post('/register', checkNotAuthenticated, async (req, res, next) => {
-    try {
-      res.status(201).send(await User.create(req.body));
-    } catch (error) {
-      next(error);
+  app.post(
+    'https://octogame.herokuapp.com/login/register',
+    checkNotAuthenticated,
+    async (req, res, next) => {
+      try {
+        res.status(201).send(await User.create(req.body));
+      } catch (error) {
+        next(error);
+      }
     }
-  });
+  );
 
   app.get('/whoami', (req, res) => {
     if (req.user) {
