@@ -122,15 +122,18 @@ export default class RedGreenScene extends Phaser.Scene {
 
     //Now we recreate the layers from Tiled. Fairly sure order matters here, so most likely will want to put the lowest layer higher up.
     //The first argument is the NAME OF THE LAYER IN TILED. The second arg is the variable name of the tileset image from above.
-    this.floor = map.createLayer('Floors', floorTiles, 0, 0);
-    this.walls = map.createLayer('Walls', wallTiles, 0, 0);
-    this.goal = map.createLayer('Goal', goalTiles, 0, 0);
-    this.drones = map.createLayer('Drones', droneTiles, 0, 0);
+    const floor = map.createLayer('Floors', floorTiles, 0, 0);
+    const walls = map.createLayer('Walls', wallTiles, 0, 0);
+    const goal = map.createLayer('Goal', goalTiles, 0, 0);
+    const drones = map.createLayer('Drones', droneTiles, 0, 0);
 
     //Colliders for walls and drone
 
-    this.walls.setCollisionByProperty({ collides: true });
-    this.drones.setCollisionByProperty({ collides: true });
+    walls.setCollisionByProperty({ collides: true });
+    drones.setCollisionByProperty({ collides: true });
+
+    this.physics.add.collider(this.octoGuy, walls);
+    this.physics.add.collider(this.octoGuy, drones);
 
     //Using this line, we create a group that will encompass all the furniture, or otherwise all the collidable, non-interactive object in the game world.
     //Then we'll use the helper function to make our furniture. We'll make a new function for each type of furniture.
@@ -522,8 +525,8 @@ export default class RedGreenScene extends Phaser.Scene {
       //The collider line makes sure the player runs into the furniture objects, rather than going through.
 
       this.physics.add.collider(this.octoGuy, this.droneGroup);
-      this.physics.add.collider(this.octoGuy, this.walls);
-      this.physics.add.collider(this.octoGuy, this.drones);
+      // this.physics.add.collider(this.octoGuy, walls);
+      // this.physics.add.collider(this.octoGuy, drones);
 
       // emit player movement
       var x = this.octoGuy.x;
