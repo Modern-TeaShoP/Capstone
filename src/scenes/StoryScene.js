@@ -56,7 +56,7 @@ export default class StoryScene extends Phaser.Scene {
 
     playButton.on('pointerdown', function () {
       scene.scene.stop('StoryScene');
-      scene.scene.start('WaitingRoom', { socket: scene.socket });
+      scene.scene.start('LoginScene', { socket: scene.socket });
     });
     let controlButton = this.add
       .image(
