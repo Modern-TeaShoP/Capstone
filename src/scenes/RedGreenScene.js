@@ -122,10 +122,15 @@ export default class RedGreenScene extends Phaser.Scene {
 
     //Now we recreate the layers from Tiled. Fairly sure order matters here, so most likely will want to put the lowest layer higher up.
     //The first argument is the NAME OF THE LAYER IN TILED. The second arg is the variable name of the tileset image from above.
-    const floor = map.createLayer('Floors', floorTiles, 0, 0);
-    const walls = map.createLayer('Walls', wallTiles, 0, 0);
-    const goal = map.createLayer('Goal', goalTiles, 0, 0);
-    const drones = map.createLayer('Drones', droneTiles, 0, 0);
+    this.floor = map.createLayer('Floors', floorTiles, 0, 0);
+    this.walls = map.createLayer('Walls', wallTiles, 0, 0);
+    this.goal = map.createLayer('Goal', goalTiles, 0, 0);
+    this.drones = map.createLayer('Drones', droneTiles, 0, 0);
+
+    //Colliders for walls and drone
+
+    this.walls.setCollisionByProperty({ collides: true });
+    this.drones.setCollisionByProperty({ collides: true });
 
     //Using this line, we create a group that will encompass all the furniture, or otherwise all the collidable, non-interactive object in the game world.
     //Then we'll use the helper function to make our furniture. We'll make a new function for each type of furniture.
@@ -329,166 +334,6 @@ export default class RedGreenScene extends Phaser.Scene {
     }
 
     // this.droneGroup.create(
-    //   this.droneLocations[0][0],
-    //   this.droneLocations[0][1]
-    // );
-    // this.droneGroup.create(
-    //   this.droneLocations[1][0],
-    //   this.droneLocations[1][1]
-    // );
-    // this.droneGroup.create(
-    //   this.droneLocations[2][0],
-    //   this.droneLocations[2][1]
-    // );
-    // this.droneGroup.create(
-    //   this.droneLocations[3][0],
-    //   this.droneLocations[3][1]
-    // );
-    // this.droneGroup.create(
-    //   this.droneLocations[4][0],
-    //   this.droneLocations[4][1]
-    // );
-    // this.droneGroup.create(
-    //   this.droneLocations[5][0],
-    //   this.droneLocations[5][1]
-    // );
-    // this.droneGroup.create(
-    //   this.droneLocations[6][0],
-    //   this.droneLocations[6][1]
-    // );
-    // this.droneGroup.create(
-    //   this.droneLocations[7][0],
-    //   this.droneLocations[7][1]
-    // );
-    // this.droneGroup.create(
-    //   this.droneLocations[8][0],
-    //   this.droneLocations[8][1]
-    // );
-    // this.droneGroup.create(
-    //   this.droneLocations[9][0],
-    //   this.droneLocations[9][1]
-    // );
-    // this.droneGroup.create(
-    //   this.droneLocations[10][0],
-    //   this.droneLocations[10][1]
-    // );
-    // this.droneGroup.create(
-    //   this.droneLocations[11][0],
-    //   this.droneLocations[11][1]
-    // );
-    // this.droneGroup.create(
-    //   this.droneLocations[12][0],
-    //   this.droneLocations[12][1]
-    // );
-    // this.droneGroup.create(
-    //   this.droneLocations[13][0],
-    //   this.droneLocations[13][1]
-    // );
-    // this.droneGroup.create(
-    //   this.droneLocations[14][0],
-    //   this.droneLocations[14][1]
-    // );
-    // this.droneGroup.create(
-    //   this.droneLocations[15][0],
-    //   this.droneLocations[15][1]
-    // );
-    // this.droneGroup.create(
-    //   this.droneLocations[16][0],
-    //   this.droneLocations[16][1]
-    // );
-    // this.droneGroup.create(
-    //   this.droneLocations[17][0],
-    //   this.droneLocations[17][1]
-    // );
-    // this.droneGroup.create(
-    //   this.droneLocations[18][0],
-    //   this.droneLocations[18][1]
-    // );
-    // this.droneGroup.create(
-    //   this.droneLocations[19][0],
-    //   this.droneLocations[19][1]
-    // );
-    // this.droneGroup.create(
-    //   this.droneLocations[20][0],
-    //   this.droneLocations[20][1]
-    // );
-    // this.droneGroup.create(
-    //   this.droneLocations[21][0],
-    //   this.droneLocations[21][1]
-    // );
-    // this.droneGroup.create(
-    //   this.droneLocations[22][0],
-    //   this.droneLocations[22][1]
-    // );
-    // this.droneGroup.create(
-    //   this.droneLocations[23][0],
-    //   this.droneLocations[23][1]
-    // );
-    // this.droneGroup.create(
-    //   this.droneLocations[24][0],
-    //   this.droneLocations[24][1]
-    // );
-    // this.droneGroup.create(
-    //   this.droneLocations[25][0],
-    //   this.droneLocations[25][1]
-    // );
-    // this.droneGroup.create(
-    //   this.droneLocations[26][0],
-    //   this.droneLocations[26][1]
-    // );
-    // this.droneGroup.create(
-    //   this.droneLocations[27][0],
-    //   this.droneLocations[27][1]
-    // );
-    // this.droneGroup.create(
-    //   this.droneLocations[28][0],
-    //   this.droneLocations[28][1]
-    // );
-    // this.droneGroup.create(
-    //   this.droneLocations[29][0],
-    //   this.droneLocations[29][1]
-    // );
-    // this.droneGroup.create(
-    //   this.droneLocations[30][0],
-    //   this.droneLocations[30][1]
-    // );
-    // this.droneGroup.create(
-    //   this.droneLocations[31][0],
-    //   this.droneLocations[31][1]
-    // );
-    // this.droneGroup.create(
-    //   this.droneLocations[32][0],
-    //   this.droneLocations[32][1]
-    // );
-    // this.droneGroup.create(
-    //   this.droneLocations[33][0],
-    //   this.droneLocations[33][1]
-    // );
-    // this.droneGroup.create(
-    //   this.droneLocations[34][0],
-    //   this.droneLocations[34][1]
-    // );
-    // this.droneGroup.create(
-    //   this.droneLocations[35][0],
-    //   this.droneLocations[35][1]
-    // );
-    // this.droneGroup.create(
-    //   this.droneLocations[36][0],
-    //   this.droneLocations[36][1]
-    // );
-    // this.droneGroup.create(
-    //   this.droneLocations[37][0],
-    //   this.droneLocations[37][1]
-    // );
-    // this.droneGroup.create(
-    //   this.droneLocations[38][0],
-    //   this.droneLocations[38][1]
-    // );
-    // this.droneGroup.create(
-    //   this.droneLocations[39][0],
-    //   this.droneLocations[39][1]
-    // );
-    // this.droneGroup.create(
     //   this.droneLocations[40][0],
     //   this.droneLocations[40][1]
     // );
@@ -677,6 +522,10 @@ export default class RedGreenScene extends Phaser.Scene {
       //The collider line makes sure the player runs into the furniture objects, rather than going through.
 
       this.physics.add.collider(this.octoGuy, this.droneGroup);
+      // this.physics.add.collider(this.octoGuy, walls);
+      // this.physics.add.collider(this.octoGuy, drones);
+      this.physics.add.collider(this.octoGuy, this.walls);
+      this.physics.add.collider(this.octoGuy, this.drones);
 
       // emit player movement
       var x = this.octoGuy.x;
