@@ -1,6 +1,6 @@
 # Octo Game&nbsp;&nbsp;&nbsp;![Latest Commit was December 2021](https://img.shields.io/badge/Latest%20Deployed%20Build-December%202021-yellowgreen?style=plastic)
 **Octo Game is still an active work in progress. Check back often for more content!** <br /> 
-*The most recent version of Octo Game is currently deployed on [Heroku](https://octogame.herokuapp.cpm). Also be sure to catch our developer log [here](https://youtu.be/n0SxFpv7QP4)!*
+*The most recent version of Octo Game is currently deployed on [Heroku](https://octogame.herokuapp.com). Also be sure to catch our developer log [here](https://youtu.be/n0SxFpv7QP4)!*
 <div align="center">
 <img src="/public/assets/logoEditSmaller.png" width="700" alt="The Octo Game logo - the words Octo Game superimposed over a stylized octopus" />
 </div>
